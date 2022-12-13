@@ -1,5 +1,6 @@
 package pages;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import fileio.UserInput;
 import platform.App;
 import platform.User;
@@ -32,7 +33,9 @@ public class RegisterPage extends Page {
     }
 
     @Override
-    public void changePage(String nextPage) {
+    public void changePage(String nextPage, ArrayNode output) {
+        /* nextPage is ignored, because we know the page we need to move to,
+        given by the successful/unsuccessful register */
         User userCreatingAccount = tryRegister();
 
         if (userCreatingAccount != null) {

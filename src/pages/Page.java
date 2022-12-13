@@ -1,11 +1,13 @@
 package pages;
 
-import platform.App;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import platform.Movie;
 
 import java.util.ArrayList;
 
 public abstract class Page {
+    public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private ArrayList<Movie> currentMoviesList;
 
     public Page() {
@@ -20,5 +22,5 @@ public abstract class Page {
         this.currentMoviesList = currentMoviesList;
     }
 
-    public abstract void changePage(String nextPage);
+    public abstract void changePage(String nextPage, ArrayNode output);
 }

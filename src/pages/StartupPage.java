@@ -1,6 +1,9 @@
 package pages;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import platform.App;
+import platform.OutputParser;
 
 public class StartupPage extends Page {
     public StartupPage() {
@@ -8,11 +11,13 @@ public class StartupPage extends Page {
     }
 
     @Override
-    public void changePage(String nextPage) {
-        if (nextPage.equals("login") || nextPage.equals("register")) {
+    public void changePage(String nextPage, ArrayNode output) {
+        if (nextPage.equals("login") || nextPage.equals("register") || nextPage.equals("logout")) {
             App.getInstance().updateApp(null, nextPage);
         } else {
-            App.getInstance().updateApp(null, "logout");
+            ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
+            OutputParser.createErrorNode(toSend);
+            output.add(toSend);
         }
     }
 }

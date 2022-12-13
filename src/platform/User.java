@@ -1,6 +1,5 @@
 package platform;
 
-import fileio.Credentials;
 import fileio.UserInput;
 
 import java.util.ArrayList;

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import fileio.Credentials;
+import pages.Page;
 
 import java.util.ArrayList;
 
@@ -37,7 +38,7 @@ public class OutputParser {
         movieNode.set("actors", actorsNode);
         ArrayNode countriesNode = OBJECT_MAPPER.createArrayNode();
         for (String country : movie.getMovieInfo().getCountriesBanned()) {
-            countriesNode.add(countriesNode);
+            countriesNode.add(country);
         }
         movieNode.set("countriesBanned", countriesNode);
         movieNode.put("numLikes", movie.getNumLikes());
@@ -54,33 +55,45 @@ public class OutputParser {
     }
 
     public static void createCurrentUserNode(User currentUser, ObjectNode currentUserNode) {
-        Credentials currentUserCredentials = currentUser.getCredentials().getCredentials();
+        if (currentUser != null) {
+            Credentials currentUserCredentials = currentUser.getCredentials().getCredentials();
 
-        ObjectNode credentialsNode = OBJECT_MAPPER.createObjectNode();
-        credentialsNode.put("name", currentUserCredentials.getName());
-        credentialsNode.put("password", currentUserCredentials.getPassword());
-        credentialsNode.put("accountType", currentUserCredentials.getAccountType());
-        credentialsNode.put("country", currentUserCredentials.getCountry());
-        credentialsNode.put("balance", ((Integer) currentUserCredentials.getBalance()).toString());
-        currentUserNode.set("credentials", credentialsNode);
+            ObjectNode credentialsNode = OBJECT_MAPPER.createObjectNode();
+            credentialsNode.put("name", currentUserCredentials.getName());
+            credentialsNode.put("password", currentUserCredentials.getPassword());
+            credentialsNode.put("accountType", currentUserCredentials.getAccountType());
+            credentialsNode.put("country", currentUserCredentials.getCountry());
+            credentialsNode.put("balance", ((Integer) currentUserCredentials.getBalance()).toString());
+            currentUserNode.set("credentials", credentialsNode);
 
-        currentUserNode.put("tokensCount", currentUser.getTokensCount());
-        currentUserNode.put("numFreePremiumMovies", currentUser.getNumFreePremiumMovies());
+            currentUserNode.put("tokensCount", currentUser.getTokensCount());
+            currentUserNode.put("numFreePremiumMovies", currentUser.getNumFreePremiumMovies());
 
-        ArrayNode purchasedMoviesNode = OBJECT_MAPPER.createArrayNode();
-        createMoviesArrayNode(purchasedMoviesNode, currentUser.getPurchasedMovies());
-        currentUserNode.set("purchasedMovies", purchasedMoviesNode);
+            ArrayNode purchasedMoviesNode = OBJECT_MAPPER.createArrayNode();
+            createMoviesArrayNode(purchasedMoviesNode, currentUser.getPurchasedMovies());
+            currentUserNode.set("purchasedMovies", purchasedMoviesNode);
 
-        ArrayNode watchedMoviesNode = OBJECT_MAPPER.createArrayNode();
-        createMoviesArrayNode(watchedMoviesNode, currentUser.getWatchedMovies());
-        currentUserNode.set("watchedMovies", watchedMoviesNode);
+            ArrayNode watchedMoviesNode = OBJECT_MAPPER.createArrayNode();
+            createMoviesArrayNode(watchedMoviesNode, currentUser.getWatchedMovies());
+            currentUserNode.set("watchedMovies", watchedMoviesNode);
 
-        ArrayNode likedMoviesNode = OBJECT_MAPPER.createArrayNode();
-        createMoviesArrayNode(likedMoviesNode, currentUser.getLikedMovies());
-        currentUserNode.set("likedMovies", likedMoviesNode);
+            ArrayNode likedMoviesNode = OBJECT_MAPPER.createArrayNode();
+            createMoviesArrayNode(likedMoviesNode, currentUser.getLikedMovies());
+            currentUserNode.set("likedMovies", likedMoviesNode);
 
-        ArrayNode ratedMoviesNode = OBJECT_MAPPER.createArrayNode();
-        createMoviesArrayNode(ratedMoviesNode, currentUser.getRatedMovies());
-        currentUserNode.set("ratedMovies", ratedMoviesNode);
+            ArrayNode ratedMoviesNode = OBJECT_MAPPER.createArrayNode();
+            createMoviesArrayNode(ratedMoviesNode, currentUser.getRatedMovies());
+            currentUserNode.set("ratedMovies", ratedMoviesNode);
+        }
+    }
+
+    public static void createNonErrorNode(ObjectNode toSend, User currentUser, Page currentPage) {
+        toSend.set("error", null);
+        ArrayNode currentMoviesNode = OBJECT_MAPPER.createArrayNode();
+        OutputParser.createMoviesArrayNode(currentMoviesNode, currentPage.getCurrentMoviesList());
+        toSend.set("currentMoviesList", currentMoviesNode);
+        ObjectNode currentUserNode = OBJECT_MAPPER.createObjectNode();
+        OutputParser.createCurrentUserNode(currentUser, currentUserNode);
+        toSend.set("currentUser", currentUserNode);
     }
 }

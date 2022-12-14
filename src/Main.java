@@ -26,49 +26,70 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException {
-//        Input inputData = OBJECT_MAPPER.readValue(new File("checker/resources/in/basic_" + 1 + ".json"), Input.class);
-        Input inputData = OBJECT_MAPPER.readValue(new File(args[0]), Input.class);
+        for (int i = 1; i <= 10; i++) {
+            Input inputData = OBJECT_MAPPER.readValue(new File("checker/resources/in/basic_" + i + ".json"), Input.class);
+//            Input inputData = OBJECT_MAPPER.readValue(new File(args[0]), Input.class);
 
-        App.getInstance().initApp();
-        UsersDatabase.getInstance().initDatabase(inputData);
-        MoviesDatabase.getInstance().initDatabase(inputData);
+            App.getInstance().initApp();
+            UsersDatabase.getInstance().initDatabase(inputData);
+            MoviesDatabase.getInstance().initDatabase(inputData);
 
-        ArrayNode output = OBJECT_MAPPER.createArrayNode();
+            ArrayNode output = OBJECT_MAPPER.createArrayNode();
 
-        for (ActionInput action : inputData.getActions()) {
-            Page currentPage = App.getInstance().getCurrentPage();
+            for (ActionInput action : inputData.getActions()) {
+                Page currentPage = App.getInstance().getCurrentPage();
 //            System.out.println(currentPage);
 
-            if (action.getType().equals("change page")) {
-                ActionsParser.changePage(action.getPage(), output);
-            } else if (action.getType().equals("on page")) {
-                if (action.getFeature().equals("login")) {
-                    String nextPage = action.getPage();
-                    String name = action.getCredentials().getName();
-                    String password = action.getCredentials().getPassword();
+                if (action.getType().equals("change page")) {
+                    ActionsParser.changePage(action.getPage(), output);
+                } else if (action.getType().equals("on page")) {
+                    switch (action.getFeature()) {
+                        case "login" -> {
+                            String nextPage = action.getPage();
+                            String name = action.getCredentials().getName();
+                            String password = action.getCredentials().getPassword();
 
-                    ActionsParser.login(currentPage, nextPage, name, password, output);
-                } else if (action.getFeature().equals("register")) {
-                    String nextPage = action.getPage();
-                    Credentials credentials = action.getCredentials();
+                            ActionsParser.login(currentPage, nextPage, name, password, output);
+                        }
+                        case "register" -> {
+                            String nextPage = action.getPage();
+                            Credentials credentials = action.getCredentials();
 
-                    ActionsParser.register(currentPage, nextPage, credentials, output);
+                            ActionsParser.register(currentPage, nextPage, credentials, output);
+                        }
+                        case "search" -> {
+                            String startsWith = action.getStartsWith();
+
+                            ActionsParser.search(currentPage, startsWith, output);
+                        }
+                        case "filter" -> {
+                            String rating = null;
+                            String duration = null;
+
+                            if (action.getFilters().getSort() != null) {
+                                rating = action.getFilters().getSort().getRating();
+                                duration = action.getFilters().getSort().getDuration();
+                            }
+
+                            ActionsParser.filter(currentPage, rating, duration, output);
+                        }
+                    }
                 }
             }
+
+            ObjectWriter objectWriter = OBJECT_MAPPER.writerWithDefaultPrettyPrinter();
+
+//        if (Main.resultFile != null) {
+//            Main.resultFile.delete();
+//        }
+
+            resultFile = new File("checker/resources/out/basic_" + i + "out.json");
+//            resultFile = new File(args[1]);
+            objectWriter.writeValue(resultFile, output);
+
+            App.deleteInstance();
+            UsersDatabase.deleteInstance();
+            MoviesDatabase.deleteInstance();
         }
-
-        ObjectWriter objectWriter = OBJECT_MAPPER.writerWithDefaultPrettyPrinter();
-
-        if (Main.resultFile != null) {
-            Main.resultFile.delete();
-        }
-
-//        resultFile = new File("checker/resources/out/basic_" + 1 + "out.json");
-        resultFile = new File(args[1]);
-        objectWriter.writeValue(resultFile, output);
-
-        App.deleteInstance();
-        UsersDatabase.deleteInstance();
-        MoviesDatabase.deleteInstance();
     }
 }

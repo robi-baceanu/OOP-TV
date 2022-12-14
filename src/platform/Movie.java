@@ -7,12 +7,14 @@ public class Movie {
     private int numLikes;
     private double rating;
     private int numRatings;
+    private double sumOfRatings;
 
     public Movie(MovieInput movieInfo) {
         this.movieInfo = movieInfo;
         this.numLikes = 0;
         this.rating = 0;
         this.numRatings = 0;
+        this.sumOfRatings = 0;
     }
 
     public MovieInput getMovieInfo() {
@@ -45,6 +47,14 @@ public class Movie {
 
     public void setNumRatings(int numRatings) {
         this.numRatings = numRatings;
+    }
+
+    public double getSumOfRatings() {
+        return sumOfRatings;
+    }
+
+    public void setSumOfRatings(double sumOfRatings) {
+        this.sumOfRatings = sumOfRatings;
     }
 
     @Override

@@ -3,13 +3,12 @@ package platform;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import fileio.ActionInput;
 import fileio.Credentials;
 import fileio.UserInput;
-import pages.LoginPage;
-import pages.MoviesPage;
-import pages.Page;
-import pages.RegisterPage;
+import pages.*;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 
 public class ActionsParser {
@@ -17,14 +16,6 @@ public class ActionsParser {
 
     private ActionsParser() {
 
-    }
-
-    public static void changePage(String nextPage, ArrayNode output) {
-        App.getInstance().getCurrentPage().changePage(nextPage, output);
-
-        if (nextPage.equals("movies")) {
-            showPage(output);
-        }
     }
 
     public static void showPage(ArrayNode output) {
@@ -38,6 +29,50 @@ public class ActionsParser {
         output.add(toSend);
     }
 
+    public static void changePage(String nextPage, ArrayNode output) {
+        App.getInstance().getCurrentPage().changePage(nextPage, output);
+
+        if (nextPage.equals("movies")) {
+            showPage(output);
+        }
+    }
+
+    public static void changeToDetailsPage(String movie, ActionInput action, ArrayNode output) {
+        boolean movieToDetailExists = false;
+        for (Movie movieInstance : App.getInstance().getCurrentUserMovies()) {
+            if (movieInstance != null && movieInstance.getMovieInfo().getName().equals(movie)) {
+                movieToDetailExists = true;
+                break;
+            }
+        }
+
+        if (movieToDetailExists) {
+            ActionsParser.changePage(action.getPage(), output);
+//            App.getInstance().getCurrentPage().changePage(nextPage, output);
+//
+//            Page currentPage = App.getInstance().getCurrentPage();
+//
+//            if (currentPage instanceof DetailsPage) {
+//                for (Movie movieInstance : App.getInstance().getCurrentUserMovies()) {
+//                    if (movieInstance != null && movieInstance.getMovieInfo().getName().equals(movie)) {
+//                        currentPage.getCurrentMoviesList().add(movieInstance);
+//                    }
+//                }
+//                System.out.println(currentPage.getCurrentMoviesList());
+//                if (currentPage.getCurrentMoviesList().size() > 0) {
+//                    showPage(output);
+//                } else {
+//                    ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
+//                    OutputParser.createErrorNode(toSend);
+//                    output.add(toSend);
+//                }
+//            } else {
+//                ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
+//                OutputParser.createErrorNode(toSend);
+//                output.add(toSend);
+//            }
+        }
+    }
 
     public static void login(Page currentPage, String nextPage, String name, String password, ArrayNode output) {
         ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
@@ -87,7 +122,9 @@ public class ActionsParser {
         ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
 
         if (currentPage instanceof MoviesPage) {
-            currentPage.getCurrentMoviesList().removeIf(movie -> !movie.getMovieInfo().getName().startsWith(startsWith));
+            ArrayList<Movie> moviesToSearch = new ArrayList<>(currentPage.getCurrentMoviesList());
+            moviesToSearch.removeIf(movie -> !movie.getMovieInfo().getName().startsWith(startsWith));
+            currentPage.setCurrentMoviesList(moviesToSearch);
 
             User currentUser = App.getInstance().getCurrentUser();
             OutputParser.createNonErrorNode(toSend, currentUser, currentPage);
@@ -98,7 +135,8 @@ public class ActionsParser {
         output.add(toSend);
     }
 
-    public static void filter(Page currentPage, String rating, String duration, ArrayNode output) {
+    public static void filter(Page currentPage, String rating, String duration, ArrayList<String> actors,
+                              ArrayList<String> genres, ArrayNode output) {
         if (currentPage instanceof MoviesPage) {
             int ratingSort = 0;
             int durationSort = 0;
@@ -149,7 +187,253 @@ public class ActionsParser {
                 }
             });
 
+            if (actors != null) {
+                for (String actor : actors) {
+                    currentPage.getCurrentMoviesList().removeIf(movie -> !movie.getMovieInfo().getActors().contains(actor));
+                }
+            }
+
+            if (genres != null) {
+                for (String genre : genres) {
+                    currentPage.getCurrentMoviesList().removeIf(movie -> !movie.getMovieInfo().getGenres().contains(genre));
+                }
+            }
+
             showPage(output);
+        } else {
+            ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
+            OutputParser.createErrorNode(toSend);
+            output.add(toSend);
+        }
+    }
+
+    public static void details(Page currentPage, String movie, ArrayNode output) {
+//        System.out.println(currentPage.getClass());
+        if (currentPage instanceof DetailsPage) {
+            for (Movie movieInstance : App.getInstance().getCurrentUserMovies()) {
+                if (movieInstance != null && movieInstance.getMovieInfo().getName().equals(movie)) {
+                    currentPage.getCurrentMoviesList().add(movieInstance);
+                }
+            }
+//            System.out.println(currentPage.getCurrentMoviesList());
+            if (currentPage.getCurrentMoviesList().size() > 0) {
+                showPage(output);
+            } else {
+                ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
+                OutputParser.createErrorNode(toSend);
+                output.add(toSend);
+            }
+        } else {
+            ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
+            OutputParser.createErrorNode(toSend);
+            output.add(toSend);
+        }
+    }
+
+    public static void buyTokens(Page currentPage, int quantity, ArrayNode output) {
+        if (currentPage instanceof UpgradesPage) {
+            User currentUser = App.getInstance().getCurrentUser();
+            int currentBalance = currentUser.getCredentials().getCredentials().getBalance();
+            int currentTokensCount = currentUser.getTokensCount();
+
+            if (quantity <= currentBalance) {
+                currentUser.setTokensCount(currentTokensCount + quantity);
+                currentUser.getCredentials().getCredentials().setBalance(currentBalance - quantity);
+            } else {
+                ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
+                OutputParser.createErrorNode(toSend);
+                output.add(toSend);
+            }
+        }
+        else {
+            ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
+            OutputParser.createErrorNode(toSend);
+            output.add(toSend);
+        }
+    }
+
+    public static void buyPremiumAccount(Page currentPage, ArrayNode output) {
+        if (currentPage instanceof UpgradesPage) {
+            User currentUser = App.getInstance().getCurrentUser();
+            Credentials currentUserCredentials = currentUser.getCredentials().getCredentials();
+
+            if (currentUserCredentials.getAccountType().equals("standard") && currentUser.getTokensCount() >= 10) {
+                currentUserCredentials.setAccountType("premium");
+                currentUser.setTokensCount(currentUser.getTokensCount() - 10);
+            } else {
+                ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
+                OutputParser.createErrorNode(toSend);
+                output.add(toSend);
+            }
+        } else {
+            ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
+            OutputParser.createErrorNode(toSend);
+            output.add(toSend);
+        }
+    }
+
+    public static void purchase(Page currentPage, String movie, ArrayNode output) {
+        User currentUser = App.getInstance().getCurrentUser();
+
+        if (currentPage instanceof DetailsPage) {
+            if (currentPage.getCurrentMoviesList().size() > 0) {
+                if (currentPage.getCurrentMoviesList().get(0).getMovieInfo().getName().equals(movie)) {
+                    Movie movieToPurchase = currentPage.getCurrentMoviesList().get(0);
+
+                    if (!currentUser.getPurchasedMovies().contains(movieToPurchase)) {
+                        Credentials currentUserCredentials = currentUser.getCredentials().getCredentials();
+
+                        if (currentUserCredentials.getAccountType().equals("premium")) {
+                            if (currentUser.getNumFreePremiumMovies() > 0) {
+                                currentUser.setNumFreePremiumMovies(currentUser.getNumFreePremiumMovies() - 1);
+                                currentUser.getPurchasedMovies().add(movieToPurchase);
+                                showPage(output);
+                            } else {
+                                if (currentUser.getTokensCount() >= 2) {
+                                    currentUser.setTokensCount(currentUser.getTokensCount() - 2);
+                                    currentUser.getPurchasedMovies().add(movieToPurchase);
+                                    showPage(output);
+                                } else {
+                                    ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
+                                    OutputParser.createErrorNode(toSend);
+                                    output.add(toSend);
+                                }
+                            }
+                        } else {
+                            if (currentUser.getTokensCount() >= 2) {
+                                currentUser.setTokensCount(currentUser.getTokensCount() - 2);
+                                currentUser.getPurchasedMovies().add(movieToPurchase);
+                            } else {
+                                ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
+                                OutputParser.createErrorNode(toSend);
+                                output.add(toSend);
+                            }
+                        }
+                    } else {
+                        ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
+                        OutputParser.createErrorNode(toSend);
+                        output.add(toSend);
+                    }
+                } else {
+                    ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
+                    OutputParser.createErrorNode(toSend);
+                    output.add(toSend);
+                }
+            } else {
+                ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
+                OutputParser.createErrorNode(toSend);
+                output.add(toSend);
+            }
+        } else {
+            ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
+            OutputParser.createErrorNode(toSend);
+            output.add(toSend);
+        }
+    }
+
+    public static void watch(Page currentPage, String movie, ArrayNode output) {
+        User currentUser = App.getInstance().getCurrentUser();
+
+        if (currentPage instanceof DetailsPage) {
+            if (currentPage.getCurrentMoviesList().size() > 0) {
+                if (currentPage.getCurrentMoviesList().get(0).getMovieInfo().getName().equals(movie)) {
+                    Movie movieToWatch = currentPage.getCurrentMoviesList().get(0);
+
+                    if (currentUser.getPurchasedMovies().contains(movieToWatch) &&
+                        !currentUser.getWatchedMovies().contains(movieToWatch)) {
+                        currentUser.getWatchedMovies().add(movieToWatch);
+                        showPage(output);
+                    } else {
+                        ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
+                        OutputParser.createErrorNode(toSend);
+                        output.add(toSend);
+                    }
+                } else {
+                    ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
+                    OutputParser.createErrorNode(toSend);
+                    output.add(toSend);
+                }
+            } else {
+                ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
+                OutputParser.createErrorNode(toSend);
+                output.add(toSend);
+            }
+        } else {
+            ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
+            OutputParser.createErrorNode(toSend);
+            output.add(toSend);
+        }
+    }
+
+    public static void like(Page currentPage, String movie, ArrayNode output) {
+        User currentUser = App.getInstance().getCurrentUser();
+
+        if (currentPage instanceof DetailsPage) {
+            if (currentPage.getCurrentMoviesList().size() > 0) {
+                if (currentPage.getCurrentMoviesList().get(0).getMovieInfo().getName().equals(movie)) {
+                    Movie movieToLike = currentPage.getCurrentMoviesList().get(0);
+
+                    if (currentUser.getWatchedMovies().contains(movieToLike) &&
+                        !currentUser.getLikedMovies().contains(movieToLike)) {
+                        movieToLike.setNumLikes(movieToLike.getNumLikes() + 1);
+                        currentUser.getLikedMovies().add(movieToLike);
+                        showPage(output);
+                    } else {
+                        ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
+                        OutputParser.createErrorNode(toSend);
+                        output.add(toSend);
+                    }
+                } else {
+                    ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
+                    OutputParser.createErrorNode(toSend);
+                    output.add(toSend);
+                }
+            } else {
+                ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
+                OutputParser.createErrorNode(toSend);
+                output.add(toSend);
+            }
+        } else {
+            ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
+            OutputParser.createErrorNode(toSend);
+            output.add(toSend);
+        }
+    }
+
+    public static void recalculateRating (Movie movie) {
+        movie.setRating(movie.getSumOfRatings() / movie.getNumRatings());
+    }
+
+    public static void rate(Page currentPage, String movie, double rate, ArrayNode output) {
+        User currentUser = App.getInstance().getCurrentUser();
+
+        if (currentPage instanceof DetailsPage) {
+            if (currentPage.getCurrentMoviesList().size() > 0) {
+                if (currentPage.getCurrentMoviesList().get(0).getMovieInfo().getName().equals(movie)) {
+                    Movie movieToRate = currentPage.getCurrentMoviesList().get(0);
+
+                    if (currentUser.getWatchedMovies().contains(movieToRate) &&
+                        !currentUser.getRatedMovies().contains(movieToRate)) {
+                        movieToRate.setSumOfRatings(movieToRate.getSumOfRatings() + rate);
+                        movieToRate.setNumRatings(movieToRate.getNumRatings() + 1);
+                        movieToRate.setRating(movieToRate.getSumOfRatings() / movieToRate.getNumRatings());
+
+                        showPage(output);
+                    } else {
+                        ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
+                        OutputParser.createErrorNode(toSend);
+                        output.add(toSend);
+                    }
+                } else {
+                    ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
+                    OutputParser.createErrorNode(toSend);
+                    output.add(toSend);
+                }
+            } else {
+                ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
+                OutputParser.createErrorNode(toSend);
+                output.add(toSend);
+            }
         } else {
             ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
             OutputParser.createErrorNode(toSend);

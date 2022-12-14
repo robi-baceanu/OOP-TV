@@ -23,27 +23,29 @@ public class OutputParser {
     }
 
     public static void createMovieNode(ObjectNode movieNode, Movie movie) {
-        movieNode.put("name", movie.getMovieInfo().getName());
-        movieNode.put("year", movie.getMovieInfo().getYear());
-        movieNode.put("duration", movie.getMovieInfo().getDuration());
-        ArrayNode genresNode = OBJECT_MAPPER.createArrayNode();
-        for (String genre : movie.getMovieInfo().getGenres()) {
-            genresNode.add(genre);
+        if (movie != null) {
+            movieNode.put("name", movie.getMovieInfo().getName());
+            movieNode.put("year", movie.getMovieInfo().getYear());
+            movieNode.put("duration", movie.getMovieInfo().getDuration());
+            ArrayNode genresNode = OBJECT_MAPPER.createArrayNode();
+            for (String genre : movie.getMovieInfo().getGenres()) {
+                genresNode.add(genre);
+            }
+            movieNode.set("genres", genresNode);
+            ArrayNode actorsNode = OBJECT_MAPPER.createArrayNode();
+            for (String actor : movie.getMovieInfo().getActors()) {
+                actorsNode.add(actor);
+            }
+            movieNode.set("actors", actorsNode);
+            ArrayNode countriesNode = OBJECT_MAPPER.createArrayNode();
+            for (String country : movie.getMovieInfo().getCountriesBanned()) {
+                countriesNode.add(country);
+            }
+            movieNode.set("countriesBanned", countriesNode);
+            movieNode.put("numLikes", movie.getNumLikes());
+            movieNode.put("rating", movie.getRating());
+            movieNode.put("numRatings", movie.getNumRatings());
         }
-        movieNode.set("genres", genresNode);
-        ArrayNode actorsNode = OBJECT_MAPPER.createArrayNode();
-        for (String actor : movie.getMovieInfo().getActors()) {
-            actorsNode.add(actor);
-        }
-        movieNode.set("actors", actorsNode);
-        ArrayNode countriesNode = OBJECT_MAPPER.createArrayNode();
-        for (String country : movie.getMovieInfo().getCountriesBanned()) {
-            countriesNode.add(country);
-        }
-        movieNode.set("countriesBanned", countriesNode);
-        movieNode.put("numLikes", movie.getNumLikes());
-        movieNode.put("rating", movie.getRating());
-        movieNode.put("numRatings", movie.getNumRatings());
     }
 
     public static void createMoviesArrayNode(ArrayNode moviesNode, ArrayList<Movie> moviesList) {

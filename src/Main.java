@@ -12,6 +12,7 @@ import platform.UsersDatabase;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class Main {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -26,9 +27,9 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException {
-        for (int i = 1; i <= 10; i++) {
-            Input inputData = OBJECT_MAPPER.readValue(new File("checker/resources/in/basic_" + i + ".json"), Input.class);
-//            Input inputData = OBJECT_MAPPER.readValue(new File(args[0]), Input.class);
+//        for (int i = 6; i <= 6; i++) {
+//            Input inputData = OBJECT_MAPPER.readValue(new File("checker/resources/in/basic_" + i + ".json"), Input.class);
+            Input inputData = OBJECT_MAPPER.readValue(new File(args[0]), Input.class);
 
             App.getInstance().initApp();
             UsersDatabase.getInstance().initDatabase(inputData);
@@ -38,10 +39,22 @@ public class Main {
 
             for (ActionInput action : inputData.getActions()) {
                 Page currentPage = App.getInstance().getCurrentPage();
-//            System.out.println(currentPage);
+//                System.out.println(currentPage);
 
                 if (action.getType().equals("change page")) {
-                    ActionsParser.changePage(action.getPage(), output);
+                    if (!action.getPage().equals("see details"))
+                        ActionsParser.changePage(action.getPage(), output);
+                    else {
+//                        ActionsParser.changePage(action.getPage(), output);
+//                        String movie = action.getMovie();
+//
+//                        ActionsParser.details(currentPage, movie, output);
+                        String movie = action.getMovie();
+                        ActionsParser.changeToDetailsPage(movie, action, output);
+
+                        Page newPage = App.getInstance().getCurrentPage();
+                        ActionsParser.details(newPage, movie, output);
+                    }
                 } else if (action.getType().equals("on page")) {
                     switch (action.getFeature()) {
                         case "login" -> {
@@ -60,7 +73,14 @@ public class Main {
                         case "search" -> {
                             String startsWith = action.getStartsWith();
 
+//                            System.out.println(currentPage.getCurrentMoviesList());
+//                            System.out.println(App.getInstance().getCurrentUserMovies());
                             ActionsParser.search(currentPage, startsWith, output);
+//                            System.out.println(currentPage.getCurrentMoviesList());
+//                            System.out.println(App.getInstance().getCurrentUserMovies());
+                            currentPage.setCurrentMoviesList(App.getInstance().getCurrentUserMovies());
+//                            System.out.println(currentPage.getCurrentMoviesList());
+//                            System.out.println(App.getInstance().getCurrentUserMovies());
                         }
                         case "filter" -> {
                             String rating = null;
@@ -71,7 +91,50 @@ public class Main {
                                 duration = action.getFilters().getSort().getDuration();
                             }
 
-                            ActionsParser.filter(currentPage, rating, duration, output);
+                            ArrayList<String> actors = null;
+                            ArrayList<String> genres = null;
+
+                            if (action.getFilters().getContains() != null) {
+                                if (action.getFilters().getContains().getActors() != null) {
+                                    actors = new ArrayList<>(action.getFilters().getContains().getActors());
+//                                    System.out.println(actors);
+                                }
+                                if (action.getFilters().getContains().getGenre() != null) {
+                                    genres = new ArrayList<>(action.getFilters().getContains().getGenre());
+//                                    System.out.println(genres);
+                                }
+                            }
+
+                            ActionsParser.filter(currentPage, rating, duration, actors, genres, output);
+                        }
+                        case "buy tokens" -> {
+                            int count = action.getCount();
+
+                            ActionsParser.buyTokens(currentPage, count, output);
+                        }
+                        case "buy premium account" -> {
+                            ActionsParser.buyPremiumAccount(currentPage, output);
+                        }
+                        case "purchase" -> {
+                            String movie = action.getMovie();
+
+                            ActionsParser.purchase(currentPage, movie, output);
+                        }
+                        case "watch" -> {
+                            String movie = action.getMovie();
+
+                            ActionsParser.watch(currentPage, movie, output);
+                        }
+                        case "like" -> {
+                            String movie = action.getMovie();
+
+                            ActionsParser.like(currentPage, movie, output);
+                        }
+                        case "rate" -> {
+                            String movie = action.getMovie();
+                            double rate = action.getRate();
+
+                            ActionsParser.rate(currentPage, movie, rate, output);
                         }
                     }
                 }
@@ -79,17 +142,17 @@ public class Main {
 
             ObjectWriter objectWriter = OBJECT_MAPPER.writerWithDefaultPrettyPrinter();
 
-//        if (Main.resultFile != null) {
-//            Main.resultFile.delete();
-//        }
+        if (Main.resultFile != null) {
+            Main.resultFile.delete();
+        }
 
-            resultFile = new File("checker/resources/out/basic_" + i + "out.json");
-//            resultFile = new File(args[1]);
+//            resultFile = new File("checker/resources/out/basic_" + i + "out.json");
+            resultFile = new File(args[1]);
             objectWriter.writeValue(resultFile, output);
 
             App.deleteInstance();
             UsersDatabase.deleteInstance();
             MoviesDatabase.deleteInstance();
-        }
+//        }
     }
 }

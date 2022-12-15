@@ -7,6 +7,12 @@ import platform.MagicNumbers;
 import platform.OutputParser;
 import platform.User;
 
+/**
+ * Page where a user can see details about a certain movie,
+ * and apply actions on it (such as purchase, watch, etc.)
+ *
+ * @author wh1ter0se
+ */
 public final class DetailsPage extends Page {
     public DetailsPage() {
         super();

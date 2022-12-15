@@ -6,6 +6,11 @@ import platform.App;
 import platform.User;
 import platform.UsersDatabase;
 
+/**
+ * Page where user can register
+ *
+ * @author wh1ter0se
+ */
 public final class RegisterPage extends Page {
     private UserInput credentials;
 
@@ -21,6 +26,11 @@ public final class RegisterPage extends Page {
         this.credentials = credentials;
     }
 
+    /**
+     * Method that attempts registering a new user
+     *
+     * @return instance of the newly registered user, or null if registration fails
+     */
     public User tryRegister() {
         for (User user : UsersDatabase.getInstance().getUsers()) {
             UserInput userCredentials = user.getCredentials();

@@ -7,6 +7,11 @@ import platform.MagicNumbers;
 import platform.OutputParser;
 import platform.User;
 
+/**
+ * Page where a user is authenticated, home page of the platform
+ *
+ * @author wh1ter0se
+ */
 public final class HomePage extends Page {
     public HomePage() {
         super();

@@ -7,11 +7,22 @@ import pages.Page;
 
 import java.util.ArrayList;
 
+/**
+ * Utility class for generating output
+ * ObjectNodes and ArrayNodes
+ *
+ * @author wh1ter0se
+ */
 public final class OutputParser {
     private OutputParser() {
 
     }
 
+    /**
+     * Generates an ObjectNode that describes an error
+     *
+     * @param toSend ObjectNode to parse
+     */
     public static void createErrorNode(final ObjectNode toSend) {
         toSend.put("error", "Error");
         ArrayNode currentMoviesNode = MagicNumbers.OBJECT_MAPPER.createArrayNode();
@@ -19,6 +30,12 @@ public final class OutputParser {
         toSend.set("currentUser", null);
     }
 
+    /**
+     * Generates an ObjectNode that describes a movie
+     *
+     * @param movieNode ObjectNode to parse
+     * @param movie instance of movie desired for output
+     */
     public static void createMovieNode(final ObjectNode movieNode, final Movie movie) {
         if (movie != null) {
             movieNode.put("name", movie.getMovieInfo().getName());
@@ -45,6 +62,12 @@ public final class OutputParser {
         }
     }
 
+    /**
+     * Generates an ArrayNode that describes a list of movies
+     *
+     * @param moviesNode ArrayNode to parse
+     * @param moviesList list of movies desired for output
+     */
     public static void createMoviesArrayNode(final ArrayNode moviesNode,
                                              final ArrayList<Movie> moviesList) {
         for (Movie movie : moviesList) {
@@ -54,6 +77,12 @@ public final class OutputParser {
         }
     }
 
+    /**
+     * Generates an ObjectNode that describes a user
+     *
+     * @param currentUser user desired for output
+     * @param currentUserNode ObjectNode to parse
+     */
     public static void createCurrentUserNode(final User currentUser,
                                              final ObjectNode currentUserNode) {
         if (currentUser != null) {
@@ -89,6 +118,14 @@ public final class OutputParser {
         }
     }
 
+    /**
+     * Generates a complete output ObjectNode, describing a user, a list
+     * of movies and signaling that no errors were produced
+     *
+     * @param toSend ObjectNode to parse
+     * @param currentUser user desired for output
+     * @param currentPage page that provides list of movies to be displayed
+     */
     public static void createNonErrorNode(final ObjectNode toSend, final User currentUser,
                                           final Page currentPage) {
         toSend.set("error", null);

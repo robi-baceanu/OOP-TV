@@ -4,6 +4,11 @@ import fileio.UserInput;
 
 import java.util.ArrayList;
 
+/**
+ * Class that describes a user
+ *
+ * @author wh1ter0se
+ */
 public final class User {
     private UserInput credentials;
     private int tokensCount;

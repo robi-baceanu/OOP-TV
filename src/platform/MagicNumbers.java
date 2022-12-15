@@ -2,6 +2,12 @@ package platform;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * Utility class used for accessing constants and the
+ * object mapper
+ *
+ * @author wh1ter0se
+ */
 public final class MagicNumbers {
     private MagicNumbers() {
 

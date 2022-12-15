@@ -7,6 +7,11 @@ import platform.MagicNumbers;
 import platform.OutputParser;
 import platform.User;
 
+/**
+ * Page where a user can see all the movies available to him
+ *
+ * @author wh1ter0se
+ */
 public final class MoviesPage extends Page {
     public MoviesPage() {
         super();

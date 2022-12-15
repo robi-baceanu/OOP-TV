@@ -7,6 +7,12 @@ import platform.MagicNumbers;
 import platform.OutputParser;
 import platform.User;
 
+/**
+ * Page where a user can buy upgrades for his account
+ * (such as making the account premium, or buying tokens)
+ *
+ * @author wh1ter0se
+ */
 public final class UpgradesPage extends Page {
     public UpgradesPage() {
         super();

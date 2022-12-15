@@ -2,6 +2,11 @@ package platform;
 
 import fileio.MovieInput;
 
+/**
+ * Class that describes a movie
+ *
+ * @author wh1ter0se
+ */
 public final class Movie {
     private final MovieInput movieInfo;
     private int numLikes;

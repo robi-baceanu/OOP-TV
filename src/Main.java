@@ -23,6 +23,12 @@ public final class Main {
 
     }
 
+    /**
+     * Entry point of the platform
+     *
+     * @param args paths to input / output files
+     * @throws IOException in case of exceptions to reading / writing
+     */
     public static void main(final String[] args) throws IOException {
         Input inputData = MagicNumbers.OBJECT_MAPPER.readValue(new File(args[0]), Input.class);
 

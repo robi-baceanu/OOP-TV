@@ -6,6 +6,11 @@ import platform.App;
 import platform.User;
 import platform.UsersDatabase;
 
+/**
+ * Page where user can log in
+ *
+ * @author wh1ter0se
+ */
 public final class LoginPage extends Page {
     private String name;
     private String password;
@@ -30,6 +35,11 @@ public final class LoginPage extends Page {
         this.password = password;
     }
 
+    /**
+     * Method that attempts logging a user in
+     *
+     * @return instance of the logged-in user, or null if login fails
+     */
     public User tryLogin() {
         for (User user : UsersDatabase.getInstance().getUsers()) {
             UserInput userCredentials = user.getCredentials();

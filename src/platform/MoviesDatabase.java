@@ -5,6 +5,11 @@ import fileio.MovieInput;
 
 import java.util.ArrayList;
 
+/**
+ * Class that stores all movies available on the platform
+ *
+ * @author wh1ter0se
+ */
 public final class MoviesDatabase implements Database {
     private static MoviesDatabase moviesDatabase = null;
     private ArrayList<Movie> movies;
@@ -13,6 +18,12 @@ public final class MoviesDatabase implements Database {
         this.movies = new ArrayList<>();
     }
 
+    /**
+     * Method for returning instance of the movies' database
+     * (implemented following Singleton pattern)
+     *
+     * @return instance of movies' database
+     */
     public static MoviesDatabase getInstance() {
         if (moviesDatabase == null) {
             moviesDatabase = new MoviesDatabase();
@@ -20,6 +31,10 @@ public final class MoviesDatabase implements Database {
         return moviesDatabase;
     }
 
+    /**
+     * Deletes instance of the application,
+     * setting its MoviesDatabase field to null
+     */
     public static void deleteInstance() {
         moviesDatabase = null;
     }

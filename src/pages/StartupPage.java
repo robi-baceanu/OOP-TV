@@ -6,6 +6,11 @@ import platform.App;
 import platform.MagicNumbers;
 import platform.OutputParser;
 
+/**
+ * Page where no user is authenticated
+ *
+ * @author wh1ter0se
+ */
 public final class StartupPage extends Page {
     public StartupPage() {
         super();

@@ -4,7 +4,7 @@ import fileio.UserInput;
 
 import java.util.ArrayList;
 
-public class User {
+public final class User {
     private UserInput credentials;
     private int tokensCount;
     private int numFreePremiumMovies;
@@ -13,21 +13,21 @@ public class User {
     private ArrayList<Movie> likedMovies;
     private ArrayList<Movie> ratedMovies;
 
-    public User(UserInput credentials) {
+    public User(final UserInput credentials) {
         this.credentials = credentials;
         this.tokensCount = 0;
-        this.numFreePremiumMovies = 15;
-        this.purchasedMovies = new ArrayList<Movie>();
-        this.watchedMovies = new ArrayList<Movie>();
-        this.likedMovies = new ArrayList<Movie>();
-        this.ratedMovies = new ArrayList<Movie>();
+        this.numFreePremiumMovies = MagicNumbers.FREE_PREMIUM_MOVIES_NUMBER;
+        this.purchasedMovies = new ArrayList<>();
+        this.watchedMovies = new ArrayList<>();
+        this.likedMovies = new ArrayList<>();
+        this.ratedMovies = new ArrayList<>();
     }
 
     public UserInput getCredentials() {
         return credentials;
     }
 
-    public void setCredentials(UserInput credentials) {
+    public void setCredentials(final UserInput credentials) {
         this.credentials = credentials;
     }
 
@@ -35,7 +35,7 @@ public class User {
         return tokensCount;
     }
 
-    public void setTokensCount(int tokensCount) {
+    public void setTokensCount(final int tokensCount) {
         this.tokensCount = tokensCount;
     }
 
@@ -43,7 +43,7 @@ public class User {
         return numFreePremiumMovies;
     }
 
-    public void setNumFreePremiumMovies(int numFreePremiumMovies) {
+    public void setNumFreePremiumMovies(final int numFreePremiumMovies) {
         this.numFreePremiumMovies = numFreePremiumMovies;
     }
 
@@ -51,7 +51,7 @@ public class User {
         return purchasedMovies;
     }
 
-    public void setPurchasedMovies(ArrayList<Movie> purchasedMovies) {
+    public void setPurchasedMovies(final ArrayList<Movie> purchasedMovies) {
         this.purchasedMovies = purchasedMovies;
     }
 
@@ -59,7 +59,7 @@ public class User {
         return watchedMovies;
     }
 
-    public void setWatchedMovies(ArrayList<Movie> watchedMovies) {
+    public void setWatchedMovies(final ArrayList<Movie> watchedMovies) {
         this.watchedMovies = watchedMovies;
     }
 
@@ -67,7 +67,7 @@ public class User {
         return likedMovies;
     }
 
-    public void setLikedMovies(ArrayList<Movie> likedMovies) {
+    public void setLikedMovies(final ArrayList<Movie> likedMovies) {
         this.likedMovies = likedMovies;
     }
 
@@ -75,20 +75,20 @@ public class User {
         return ratedMovies;
     }
 
-    public void setRatedMovies(ArrayList<Movie> ratedMovies) {
+    public void setRatedMovies(final ArrayList<Movie> ratedMovies) {
         this.ratedMovies = ratedMovies;
     }
 
     @Override
     public String toString() {
-        return "User{" +
-                "credentials=" + credentials +
-                ", tokensCount=" + tokensCount +
-                ", numFreePremiumMovies=" + numFreePremiumMovies +
-                ", purchasedMovies=" + purchasedMovies +
-                ", watchedMovies=" + watchedMovies +
-                ", likedMovies=" + likedMovies +
-                ", ratedMovies=" + ratedMovies +
-                '}';
+        return "User{"
+                + "credentials=" + credentials
+                + ", tokensCount=" + tokensCount
+                + ", numFreePremiumMovies=" + numFreePremiumMovies
+                + ", purchasedMovies=" + purchasedMovies
+                + ", watchedMovies=" + watchedMovies
+                + ", likedMovies=" + likedMovies
+                + ", ratedMovies=" + ratedMovies
+                + '}';
     }
 }

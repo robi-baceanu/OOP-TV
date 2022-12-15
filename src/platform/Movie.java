@@ -2,14 +2,14 @@ package platform;
 
 import fileio.MovieInput;
 
-public class Movie {
-    private MovieInput movieInfo;
+public final class Movie {
+    private final MovieInput movieInfo;
     private int numLikes;
     private double rating;
     private int numRatings;
     private double sumOfRatings;
 
-    public Movie(MovieInput movieInfo) {
+    public Movie(final MovieInput movieInfo) {
         this.movieInfo = movieInfo;
         this.numLikes = 0;
         this.rating = 0;
@@ -21,15 +21,11 @@ public class Movie {
         return movieInfo;
     }
 
-    public void setMovieInfo(MovieInput movieInfo) {
-        this.movieInfo = movieInfo;
-    }
-
     public int getNumLikes() {
         return numLikes;
     }
 
-    public void setNumLikes(int numLikes) {
+    public void setNumLikes(final int numLikes) {
         this.numLikes = numLikes;
     }
 
@@ -37,7 +33,7 @@ public class Movie {
         return rating;
     }
 
-    public void setRating(double rating) {
+    public void setRating(final double rating) {
         this.rating = rating;
     }
 
@@ -45,7 +41,7 @@ public class Movie {
         return numRatings;
     }
 
-    public void setNumRatings(int numRatings) {
+    public void setNumRatings(final int numRatings) {
         this.numRatings = numRatings;
     }
 
@@ -53,17 +49,17 @@ public class Movie {
         return sumOfRatings;
     }
 
-    public void setSumOfRatings(double sumOfRatings) {
+    public void setSumOfRatings(final double sumOfRatings) {
         this.sumOfRatings = sumOfRatings;
     }
 
     @Override
     public String toString() {
-        return "Movie{" +
-                "movieInfo=" + movieInfo +
-                ", numLikes=" + numLikes +
-                ", rating=" + rating +
-                ", numRatings=" + numRatings +
-                '}';
+        return "Movie{"
+                + "movieInfo=" + movieInfo
+                + ", numLikes=" + numLikes
+                + ", rating=" + rating
+                + ", numRatings=" + numRatings
+                + '}';
     }
 }

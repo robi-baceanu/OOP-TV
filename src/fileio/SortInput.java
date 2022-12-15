@@ -1,6 +1,6 @@
 package fileio;
 
-public class SortInput {
+public final class SortInput {
     private String rating;
     private String duration;
 
@@ -11,7 +11,7 @@ public class SortInput {
         return rating;
     }
 
-    public void setRating(String rating) {
+    public void setRating(final String rating) {
         this.rating = rating;
     }
 
@@ -19,15 +19,15 @@ public class SortInput {
         return duration;
     }
 
-    public void setDuration(String duration) {
+    public void setDuration(final String duration) {
         this.duration = duration;
     }
 
     @Override
     public String toString() {
-        return "SortInput{" +
-                "rating='" + rating + '\'' +
-                ", duration='" + duration + '\'' +
-                '}';
+        return "SortInput{"
+                + "rating='" + rating + '\''
+                + ", duration='" + duration + '\''
+                + '}';
     }
 }

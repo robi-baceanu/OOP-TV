@@ -1,7 +1,11 @@
 package pages;
 
-public class PageFactory {
-    public static Page getPage(String pageType) {
+public final class PageFactory {
+    private PageFactory() {
+
+    }
+
+    public static Page getPage(final String pageType) {
         return switch (pageType) {
             case "logout" -> new StartupPage();
             case "login" -> new LoginPage();

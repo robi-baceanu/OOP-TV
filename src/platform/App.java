@@ -5,7 +5,7 @@ import pages.PageFactory;
 
 import java.util.ArrayList;
 
-public class App {
+public final class App {
     private static App app = null;
     private User currentUser;
     private ArrayList<Movie> currentUserMovies;
@@ -30,7 +30,7 @@ public class App {
         return currentUser;
     }
 
-    public void setCurrentUser(User currentUser) {
+    public void setCurrentUser(final User currentUser) {
         this.currentUser = currentUser;
     }
 
@@ -38,7 +38,7 @@ public class App {
         return currentUserMovies;
     }
 
-    public void setCurrentUserMovies(ArrayList<Movie> currentUserMovies) {
+    public void setCurrentUserMovies(final ArrayList<Movie> currentUserMovies) {
         this.currentUserMovies = currentUserMovies;
     }
 
@@ -46,34 +46,28 @@ public class App {
         return currentPage;
     }
 
-    public void setCurrentPage(Page currentPage) {
+    public void setCurrentPage(final Page currentPage) {
         this.currentPage = currentPage;
     }
 
     public void initApp() {
         currentUser = null;
         currentPage = PageFactory.getPage("logout");
-        currentUserMovies = new ArrayList<Movie>();
+        currentUserMovies = new ArrayList<>();
     }
 
-    public void updateApp(User user, String nextPage) {
+    public void updateApp(final User user, final String nextPage) {
         app.setCurrentPage(PageFactory.getPage(nextPage));
 
         app.setCurrentUser(user);
 
         if (user != null) {
             app.setCurrentUserMovies(new ArrayList<>(MoviesDatabase.getInstance().getMovies()));
-//            app.setCurrentUserMovies(MoviesDatabase.getInstance().getMovies());
             String userCountry = user.getCredentials().getCredentials().getCountry();
-            app.getCurrentUserMovies().removeIf(movie -> movie.getMovieInfo().getCountriesBanned().contains(userCountry));
-//            for (Movie movie : app.getCurrentUserMovies()) {
-//                if (movie.getMovieInfo().getCountriesBanned().contains(userCountry)) {
-//                    app.getCurrentUserMovies().remove(movie);
-//                }
-//            }
+            app.getCurrentUserMovies().removeIf(
+                    movie -> movie.getMovieInfo().getCountriesBanned().contains(userCountry));
         } else {
             app.setCurrentUserMovies(new ArrayList<>());
         }
-
     }
 }

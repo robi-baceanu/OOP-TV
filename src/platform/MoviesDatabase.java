@@ -5,16 +5,16 @@ import fileio.MovieInput;
 
 import java.util.ArrayList;
 
-public class MoviesDatabase implements Database {
+public final class MoviesDatabase implements Database {
     private static MoviesDatabase moviesDatabase = null;
     private ArrayList<Movie> movies;
 
     private MoviesDatabase() {
-        this.movies = new ArrayList<Movie>();
+        this.movies = new ArrayList<>();
     }
 
     public static MoviesDatabase getInstance() {
-        if (moviesDatabase== null) {
+        if (moviesDatabase == null) {
             moviesDatabase = new MoviesDatabase();
         }
         return moviesDatabase;
@@ -28,12 +28,12 @@ public class MoviesDatabase implements Database {
         return movies;
     }
 
-    public void setMovies(ArrayList<Movie> movies) {
+    public void setMovies(final ArrayList<Movie> movies) {
         this.movies = movies;
     }
 
     @Override
-    public void initDatabase(Input inputData) {
+    public void initDatabase(final Input inputData) {
         for (MovieInput movie : inputData.getMovies()) {
             movies.add(new Movie(movie));
         }

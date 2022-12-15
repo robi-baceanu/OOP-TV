@@ -6,7 +6,7 @@ import platform.App;
 import platform.User;
 import platform.UsersDatabase;
 
-public class RegisterPage extends Page {
+public final class RegisterPage extends Page {
     private UserInput credentials;
 
     public RegisterPage() {
@@ -17,15 +17,17 @@ public class RegisterPage extends Page {
         return credentials;
     }
 
-    public void setCredentials(UserInput credentials) {
+    public void setCredentials(final UserInput credentials) {
         this.credentials = credentials;
     }
 
     public User tryRegister() {
         for (User user : UsersDatabase.getInstance().getUsers()) {
             UserInput userCredentials = user.getCredentials();
-            if (userCredentials.getCredentials().getName().equals(credentials.getCredentials().getName()) &&
-                userCredentials.getCredentials().getPassword().equals(credentials.getCredentials().getPassword())) {
+            if (userCredentials.getCredentials().getName().equals(
+                    credentials.getCredentials().getName())
+                    && userCredentials.getCredentials().getPassword().equals(
+                    credentials.getCredentials().getPassword())) {
                 return null;
             }
         }
@@ -33,7 +35,7 @@ public class RegisterPage extends Page {
     }
 
     @Override
-    public void changePage(String nextPage, ArrayNode output) {
+    public void changePage(final String nextPage, final ArrayNode output) {
         /* nextPage is ignored, because we know the page we need to move to,
         given by the successful/unsuccessful register */
         User userCreatingAccount = tryRegister();

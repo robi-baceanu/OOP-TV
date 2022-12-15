@@ -5,12 +5,12 @@ import fileio.UserInput;
 
 import java.util.ArrayList;
 
-public class UsersDatabase implements Database {
+public final class UsersDatabase implements Database {
     private static UsersDatabase usersDatabase = null;
     private ArrayList<User> users;
 
     private UsersDatabase() {
-        this.users = new ArrayList<User>();
+        this.users = new ArrayList<>();
     }
 
     public static UsersDatabase getInstance() {
@@ -28,12 +28,12 @@ public class UsersDatabase implements Database {
         return users;
     }
 
-    public void setUsers(ArrayList<User> users) {
+    public void setUsers(final ArrayList<User> users) {
         this.users = users;
     }
 
     @Override
-    public void initDatabase(Input inputData) {
+    public void initDatabase(final Input inputData) {
         for (UserInput user : inputData.getUsers()) {
             users.add(new User(user));
         }

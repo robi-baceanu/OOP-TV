@@ -6,7 +6,7 @@ import platform.App;
 import platform.User;
 import platform.UsersDatabase;
 
-public class LoginPage extends Page {
+public final class LoginPage extends Page {
     private String name;
     private String password;
 
@@ -18,7 +18,7 @@ public class LoginPage extends Page {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -26,15 +26,15 @@ public class LoginPage extends Page {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(final String password) {
         this.password = password;
     }
 
     public User tryLogin() {
         for (User user : UsersDatabase.getInstance().getUsers()) {
             UserInput userCredentials = user.getCredentials();
-            if (userCredentials.getCredentials().getName().equals(this.name) &&
-                userCredentials.getCredentials().getPassword().equals(this.password)) {
+            if (userCredentials.getCredentials().getName().equals(this.name)
+                    && userCredentials.getCredentials().getPassword().equals(this.password)) {
                 return user;
             }
         }
@@ -42,7 +42,7 @@ public class LoginPage extends Page {
     }
 
     @Override
-    public void changePage(String nextPage, ArrayNode output) {
+    public void changePage(final String nextPage, final ArrayNode output) {
         /* nextPage is ignored, because we know the page we need to move to,
         given by the successful/unsuccessful login */
         User userLoggingIn = tryLogin();

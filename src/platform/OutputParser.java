@@ -1,6 +1,5 @@
 package platform;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import fileio.Credentials;
@@ -8,36 +7,34 @@ import pages.Page;
 
 import java.util.ArrayList;
 
-public class OutputParser {
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
+public final class OutputParser {
     private OutputParser() {
 
     }
 
-    public static void createErrorNode(ObjectNode toSend) {
+    public static void createErrorNode(final ObjectNode toSend) {
         toSend.put("error", "Error");
-        ArrayNode currentMoviesNode = OBJECT_MAPPER.createArrayNode();
+        ArrayNode currentMoviesNode = MagicNumbers.OBJECT_MAPPER.createArrayNode();
         toSend.set("currentMoviesList", currentMoviesNode);
         toSend.set("currentUser", null);
     }
 
-    public static void createMovieNode(ObjectNode movieNode, Movie movie) {
+    public static void createMovieNode(final ObjectNode movieNode, final Movie movie) {
         if (movie != null) {
             movieNode.put("name", movie.getMovieInfo().getName());
             movieNode.put("year", movie.getMovieInfo().getYear());
             movieNode.put("duration", movie.getMovieInfo().getDuration());
-            ArrayNode genresNode = OBJECT_MAPPER.createArrayNode();
+            ArrayNode genresNode = MagicNumbers.OBJECT_MAPPER.createArrayNode();
             for (String genre : movie.getMovieInfo().getGenres()) {
                 genresNode.add(genre);
             }
             movieNode.set("genres", genresNode);
-            ArrayNode actorsNode = OBJECT_MAPPER.createArrayNode();
+            ArrayNode actorsNode = MagicNumbers.OBJECT_MAPPER.createArrayNode();
             for (String actor : movie.getMovieInfo().getActors()) {
                 actorsNode.add(actor);
             }
             movieNode.set("actors", actorsNode);
-            ArrayNode countriesNode = OBJECT_MAPPER.createArrayNode();
+            ArrayNode countriesNode = MagicNumbers.OBJECT_MAPPER.createArrayNode();
             for (String country : movie.getMovieInfo().getCountriesBanned()) {
                 countriesNode.add(country);
             }
@@ -48,53 +45,57 @@ public class OutputParser {
         }
     }
 
-    public static void createMoviesArrayNode(ArrayNode moviesNode, ArrayList<Movie> moviesList) {
+    public static void createMoviesArrayNode(final ArrayNode moviesNode,
+                                             final ArrayList<Movie> moviesList) {
         for (Movie movie : moviesList) {
-            ObjectNode movieNode = OBJECT_MAPPER.createObjectNode();
+            ObjectNode movieNode = MagicNumbers.OBJECT_MAPPER.createObjectNode();
             OutputParser.createMovieNode(movieNode, movie);
             moviesNode.add(movieNode);
         }
     }
 
-    public static void createCurrentUserNode(User currentUser, ObjectNode currentUserNode) {
+    public static void createCurrentUserNode(final User currentUser,
+                                             final ObjectNode currentUserNode) {
         if (currentUser != null) {
             Credentials currentUserCredentials = currentUser.getCredentials().getCredentials();
 
-            ObjectNode credentialsNode = OBJECT_MAPPER.createObjectNode();
+            ObjectNode credentialsNode = MagicNumbers.OBJECT_MAPPER.createObjectNode();
             credentialsNode.put("name", currentUserCredentials.getName());
             credentialsNode.put("password", currentUserCredentials.getPassword());
             credentialsNode.put("accountType", currentUserCredentials.getAccountType());
             credentialsNode.put("country", currentUserCredentials.getCountry());
-            credentialsNode.put("balance", ((Integer) currentUserCredentials.getBalance()).toString());
+            credentialsNode.put("balance",
+                    ((Integer) currentUserCredentials.getBalance()).toString());
             currentUserNode.set("credentials", credentialsNode);
 
             currentUserNode.put("tokensCount", currentUser.getTokensCount());
             currentUserNode.put("numFreePremiumMovies", currentUser.getNumFreePremiumMovies());
 
-            ArrayNode purchasedMoviesNode = OBJECT_MAPPER.createArrayNode();
+            ArrayNode purchasedMoviesNode = MagicNumbers.OBJECT_MAPPER.createArrayNode();
             createMoviesArrayNode(purchasedMoviesNode, currentUser.getPurchasedMovies());
             currentUserNode.set("purchasedMovies", purchasedMoviesNode);
 
-            ArrayNode watchedMoviesNode = OBJECT_MAPPER.createArrayNode();
+            ArrayNode watchedMoviesNode = MagicNumbers.OBJECT_MAPPER.createArrayNode();
             createMoviesArrayNode(watchedMoviesNode, currentUser.getWatchedMovies());
             currentUserNode.set("watchedMovies", watchedMoviesNode);
 
-            ArrayNode likedMoviesNode = OBJECT_MAPPER.createArrayNode();
+            ArrayNode likedMoviesNode = MagicNumbers.OBJECT_MAPPER.createArrayNode();
             createMoviesArrayNode(likedMoviesNode, currentUser.getLikedMovies());
             currentUserNode.set("likedMovies", likedMoviesNode);
 
-            ArrayNode ratedMoviesNode = OBJECT_MAPPER.createArrayNode();
+            ArrayNode ratedMoviesNode = MagicNumbers.OBJECT_MAPPER.createArrayNode();
             createMoviesArrayNode(ratedMoviesNode, currentUser.getRatedMovies());
             currentUserNode.set("ratedMovies", ratedMoviesNode);
         }
     }
 
-    public static void createNonErrorNode(ObjectNode toSend, User currentUser, Page currentPage) {
+    public static void createNonErrorNode(final ObjectNode toSend, final User currentUser,
+                                          final Page currentPage) {
         toSend.set("error", null);
-        ArrayNode currentMoviesNode = OBJECT_MAPPER.createArrayNode();
+        ArrayNode currentMoviesNode = MagicNumbers.OBJECT_MAPPER.createArrayNode();
         OutputParser.createMoviesArrayNode(currentMoviesNode, currentPage.getCurrentMoviesList());
         toSend.set("currentMoviesList", currentMoviesNode);
-        ObjectNode currentUserNode = OBJECT_MAPPER.createObjectNode();
+        ObjectNode currentUserNode = MagicNumbers.OBJECT_MAPPER.createObjectNode();
         OutputParser.createCurrentUserNode(currentUser, currentUserNode);
         toSend.set("currentUser", currentUserNode);
     }

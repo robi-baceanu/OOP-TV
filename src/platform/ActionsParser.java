@@ -24,8 +24,11 @@ public class ActionsParser {
         User currentUser = App.getInstance().getCurrentUser();
         Page currentPage = App.getInstance().getCurrentPage();
 
-        OutputParser.createNonErrorNode(toSend, currentUser, currentPage);
-
+        if (currentUser != null) {
+            OutputParser.createNonErrorNode(toSend, currentUser, currentPage);
+        } else {
+            OutputParser.createErrorNode(toSend);
+        }
         output.add(toSend);
     }
 
@@ -37,9 +40,9 @@ public class ActionsParser {
         }
     }
 
-    public static void changeToDetailsPage(String movie, ActionInput action, ArrayNode output) {
+    public static void changeToDetailsPage(Page currentPage, String movie, ActionInput action, ArrayNode output) {
         boolean movieToDetailExists = false;
-        for (Movie movieInstance : App.getInstance().getCurrentUserMovies()) {
+        for (Movie movieInstance : currentPage.getCurrentMoviesList()/*App.getInstance().getCurrentUserMovies()*/) {
             if (movieInstance != null && movieInstance.getMovieInfo().getName().equals(movie)) {
                 movieToDetailExists = true;
                 break;
@@ -138,6 +141,8 @@ public class ActionsParser {
     public static void filter(Page currentPage, String rating, String duration, ArrayList<String> actors,
                               ArrayList<String> genres, ArrayNode output) {
         if (currentPage instanceof MoviesPage) {
+            currentPage.setCurrentMoviesList(new ArrayList<>(App.getInstance().getCurrentUserMovies()));
+
             int ratingSort = 0;
             int durationSort = 0;
 
@@ -173,7 +178,7 @@ public class ActionsParser {
                                 return 0;
                             }
                         } else {
-                            return finalDurationSort * (durationMovie2 - durationMovie1);
+                            return finalDurationSort * (durationMovie1 - durationMovie2);
                         }
                     } else {
                         double ratingMovie1 = o1.getRating();
@@ -277,12 +282,10 @@ public class ActionsParser {
 
         if (currentPage instanceof DetailsPage) {
             if (currentPage.getCurrentMoviesList().size() > 0) {
-                if (currentPage.getCurrentMoviesList().get(0).getMovieInfo().getName().equals(movie)) {
+//                if (currentPage.getCurrentMoviesList().get(0).getMovieInfo().getName().equals(movie)) {
                     Movie movieToPurchase = currentPage.getCurrentMoviesList().get(0);
-
                     if (!currentUser.getPurchasedMovies().contains(movieToPurchase)) {
                         Credentials currentUserCredentials = currentUser.getCredentials().getCredentials();
-
                         if (currentUserCredentials.getAccountType().equals("premium")) {
                             if (currentUser.getNumFreePremiumMovies() > 0) {
                                 currentUser.setNumFreePremiumMovies(currentUser.getNumFreePremiumMovies() - 1);
@@ -291,7 +294,9 @@ public class ActionsParser {
                             } else {
                                 if (currentUser.getTokensCount() >= 2) {
                                     currentUser.setTokensCount(currentUser.getTokensCount() - 2);
+
                                     currentUser.getPurchasedMovies().add(movieToPurchase);
+
                                     showPage(output);
                                 } else {
                                     ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
@@ -302,7 +307,10 @@ public class ActionsParser {
                         } else {
                             if (currentUser.getTokensCount() >= 2) {
                                 currentUser.setTokensCount(currentUser.getTokensCount() - 2);
+
                                 currentUser.getPurchasedMovies().add(movieToPurchase);
+
+                                showPage(output);
                             } else {
                                 ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
                                 OutputParser.createErrorNode(toSend);
@@ -314,11 +322,11 @@ public class ActionsParser {
                         OutputParser.createErrorNode(toSend);
                         output.add(toSend);
                     }
-                } else {
-                    ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
-                    OutputParser.createErrorNode(toSend);
-                    output.add(toSend);
-                }
+//                } else {
+//                    ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
+//                    OutputParser.createErrorNode(toSend);
+//                    output.add(toSend);
+//                }
             } else {
                 ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
                 OutputParser.createErrorNode(toSend);
@@ -336,23 +344,24 @@ public class ActionsParser {
 
         if (currentPage instanceof DetailsPage) {
             if (currentPage.getCurrentMoviesList().size() > 0) {
-                if (currentPage.getCurrentMoviesList().get(0).getMovieInfo().getName().equals(movie)) {
+//                if (currentPage.getCurrentMoviesList().get(0).getMovieInfo().getName().equals(movie)) {
                     Movie movieToWatch = currentPage.getCurrentMoviesList().get(0);
 
                     if (currentUser.getPurchasedMovies().contains(movieToWatch) &&
                         !currentUser.getWatchedMovies().contains(movieToWatch)) {
                         currentUser.getWatchedMovies().add(movieToWatch);
+
                         showPage(output);
                     } else {
                         ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
                         OutputParser.createErrorNode(toSend);
                         output.add(toSend);
                     }
-                } else {
-                    ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
-                    OutputParser.createErrorNode(toSend);
-                    output.add(toSend);
-                }
+//                } else {
+//                    ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
+//                    OutputParser.createErrorNode(toSend);
+//                    output.add(toSend);
+//                }
             } else {
                 ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
                 OutputParser.createErrorNode(toSend);
@@ -370,24 +379,26 @@ public class ActionsParser {
 
         if (currentPage instanceof DetailsPage) {
             if (currentPage.getCurrentMoviesList().size() > 0) {
-                if (currentPage.getCurrentMoviesList().get(0).getMovieInfo().getName().equals(movie)) {
+//                if (currentPage.getCurrentMoviesList().get(0).getMovieInfo().getName().equals(movie)) {
                     Movie movieToLike = currentPage.getCurrentMoviesList().get(0);
 
                     if (currentUser.getWatchedMovies().contains(movieToLike) &&
                         !currentUser.getLikedMovies().contains(movieToLike)) {
                         movieToLike.setNumLikes(movieToLike.getNumLikes() + 1);
+
                         currentUser.getLikedMovies().add(movieToLike);
+
                         showPage(output);
                     } else {
                         ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
                         OutputParser.createErrorNode(toSend);
                         output.add(toSend);
                     }
-                } else {
-                    ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
-                    OutputParser.createErrorNode(toSend);
-                    output.add(toSend);
-                }
+//                } else {
+//                    ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
+//                    OutputParser.createErrorNode(toSend);
+//                    output.add(toSend);
+//                }
             } else {
                 ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
                 OutputParser.createErrorNode(toSend);
@@ -400,23 +411,22 @@ public class ActionsParser {
         }
     }
 
-    public static void recalculateRating (Movie movie) {
-        movie.setRating(movie.getSumOfRatings() / movie.getNumRatings());
-    }
-
     public static void rate(Page currentPage, String movie, double rate, ArrayNode output) {
         User currentUser = App.getInstance().getCurrentUser();
 
         if (currentPage instanceof DetailsPage) {
             if (currentPage.getCurrentMoviesList().size() > 0) {
-                if (currentPage.getCurrentMoviesList().get(0).getMovieInfo().getName().equals(movie)) {
+//                if (currentPage.getCurrentMoviesList().get(0).getMovieInfo().getName().equals(movie)) {
                     Movie movieToRate = currentPage.getCurrentMoviesList().get(0);
 
                     if (currentUser.getWatchedMovies().contains(movieToRate) &&
-                        !currentUser.getRatedMovies().contains(movieToRate)) {
+                        !currentUser.getRatedMovies().contains(movieToRate) &&
+                        rate <= 5) {
                         movieToRate.setSumOfRatings(movieToRate.getSumOfRatings() + rate);
                         movieToRate.setNumRatings(movieToRate.getNumRatings() + 1);
                         movieToRate.setRating(movieToRate.getSumOfRatings() / movieToRate.getNumRatings());
+
+                        currentUser.getRatedMovies().add(movieToRate);
 
                         showPage(output);
                     } else {
@@ -424,11 +434,11 @@ public class ActionsParser {
                         OutputParser.createErrorNode(toSend);
                         output.add(toSend);
                     }
-                } else {
-                    ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
-                    OutputParser.createErrorNode(toSend);
-                    output.add(toSend);
-                }
+//                } else {
+//                    ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
+//                    OutputParser.createErrorNode(toSend);
+//                    output.add(toSend);
+//                }
             } else {
                 ObjectNode toSend = OBJECT_MAPPER.createObjectNode();
                 OutputParser.createErrorNode(toSend);

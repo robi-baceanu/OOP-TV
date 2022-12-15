@@ -62,10 +62,15 @@ public class App {
         app.setCurrentUser(user);
 
         if (user != null) {
-            app.setCurrentUserMovies(MoviesDatabase.getInstance().getMovies());
+            app.setCurrentUserMovies(new ArrayList<>(MoviesDatabase.getInstance().getMovies()));
+//            app.setCurrentUserMovies(MoviesDatabase.getInstance().getMovies());
             String userCountry = user.getCredentials().getCredentials().getCountry();
-            app.getCurrentUserMovies().
-                    removeIf(movie -> movie.getMovieInfo().getCountriesBanned().contains(userCountry));
+            app.getCurrentUserMovies().removeIf(movie -> movie.getMovieInfo().getCountriesBanned().contains(userCountry));
+//            for (Movie movie : app.getCurrentUserMovies()) {
+//                if (movie.getMovieInfo().getCountriesBanned().contains(userCountry)) {
+//                    app.getCurrentUserMovies().remove(movie);
+//                }
+//            }
         } else {
             app.setCurrentUserMovies(new ArrayList<>());
         }

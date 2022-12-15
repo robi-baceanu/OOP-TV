@@ -14,10 +14,7 @@ public class MoviesPage extends Page {
 
     @Override
     public void changePage(String nextPage, ArrayNode output) {
-        if (nextPage.equals("see details")) {
-            User currentUser = App.getInstance().getCurrentUser();
-            App.getInstance().updateApp(currentUser, nextPage);
-        } else if (nextPage.equals("homepage")) {
+        if (nextPage.equals("see details") || nextPage.equals("movies") || nextPage.equals("homepage")) {
             User currentUser = App.getInstance().getCurrentUser();
             App.getInstance().updateApp(currentUser, nextPage);
         } else if (nextPage.equals("logout")) {

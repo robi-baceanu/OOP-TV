@@ -13,7 +13,7 @@ public class HomePage extends Page {
 
     @Override
     public void changePage(String nextPage, ArrayNode output) {
-        if (nextPage.equals("movies") || nextPage.equals("upgrades")) {
+        if (nextPage.equals("movies") || nextPage.equals("upgrades") || nextPage.equals("homepage")) {
             User currentUser = App.getInstance().getCurrentUser();
             App.getInstance().updateApp(currentUser, nextPage);
         } else if (nextPage.equals("logout")) {

@@ -27,7 +27,7 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException {
-//        for (int i = 6; i <= 6; i++) {
+//        for (int i = 10; i <= 10; i++) {
 //            Input inputData = OBJECT_MAPPER.readValue(new File("checker/resources/in/basic_" + i + ".json"), Input.class);
             Input inputData = OBJECT_MAPPER.readValue(new File(args[0]), Input.class);
 
@@ -50,7 +50,7 @@ public class Main {
 //
 //                        ActionsParser.details(currentPage, movie, output);
                         String movie = action.getMovie();
-                        ActionsParser.changeToDetailsPage(movie, action, output);
+                        ActionsParser.changeToDetailsPage(currentPage, movie, action, output);
 
                         Page newPage = App.getInstance().getCurrentPage();
                         ActionsParser.details(newPage, movie, output);

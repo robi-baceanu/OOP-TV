@@ -13,7 +13,7 @@ public class DetailsPage extends Page {
 
     @Override
     public void changePage(String nextPage, ArrayNode output) {
-        if (nextPage.equals("movies") || nextPage.equals("upgrades") || nextPage.equals("homepage")) {
+        if (nextPage.equals("movies") || nextPage.equals("upgrades")) {
             User currentUser = App.getInstance().getCurrentUser();
             App.getInstance().updateApp(currentUser, nextPage);
         } else if (nextPage.equals("logout")) {

@@ -92,6 +92,7 @@ public final class ActionsParser {
             ObjectNode toSend = MagicNumbers.OBJECT_MAPPER.createObjectNode();
             OutputParser.createErrorNode(toSend);
             output.add(toSend);
+            App.getInstance().getCurrentUser().getAccessedPages().removeLast();
         }
     }
 
@@ -211,11 +212,6 @@ public final class ActionsParser {
                 currentUser.getAccessedPages().removeLast();
 
                 if (currentUser.getAccessedPages().size() > 0) {
-//                    App.getInstance().getCurrentPage().changePage(userAccessedPages.getLast(), output);
-//
-//                    if (userAccessedPages.getLast().equals("movies")) {
-//                        showPage(output);
-//                    }
                     changePage(userAccessedPages.getLast(), output);
                 } else {
                     ObjectNode toSend = MagicNumbers.OBJECT_MAPPER.createObjectNode();

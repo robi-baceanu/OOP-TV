@@ -5,11 +5,7 @@ import fileio.ActionInput;
 import fileio.Input;
 import fileio.MovieInput;
 import pages.Page;
-import platform.MagicNumbers;
-import platform.App;
-import platform.UsersDatabase;
-import platform.MoviesDatabase;
-import platform.ActionsParser;
+import platform.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +24,7 @@ public final class Main {
      * @throws IOException in case of exceptions to reading / writing
      */
     public static void main(final String[] args) throws IOException {
-//        for (int i = 1; i <= 4; i++) {
+//        for (int i = 6; i <= 6; i++) {
 //            Input inputData = MagicNumbers.OBJECT_MAPPER.readValue(new File("checker/resources/in/basic_" + i + ".json"), Input.class);
             Input inputData = MagicNumbers.OBJECT_MAPPER.readValue(new File(args[0]), Input.class);
 
@@ -43,29 +39,30 @@ public final class Main {
             for (ActionInput action : inputData.getActions()) {
                 Page currentPage = App.getInstance().getCurrentPage();
 
-                if (action.getType().equals("change page")) {
-                    if (App.getInstance().getCurrentUser() != null) {
-                        App.getInstance().getCurrentUser().getAccessedPages().addLast(action.getPage());
-                    }
+                switch (action.getType()) {
+                    case "change page" -> {
+                        if (App.getInstance().getCurrentUser() != null) {
+                            App.getInstance().getCurrentUser().getAccessedPages().addLast(action.getPage());
+                        }
 
-                    if (!action.getPage().equals("see details")) {
-                        ActionsParser.changePage(action.getPage(), output);
-                    } else {
-                        String movie = action.getMovie();
-                        ActionsParser.changeToDetailsPage(currentPage, movie, action, output);
+                        if (!action.getPage().equals("see details")) {
+                            ActionsParser.changePage(action.getPage(), output);
+                        } else {
+                            String movie = action.getMovie();
+                            ActionsParser.changeToDetailsPage(currentPage, movie, action, output);
+                        }
                     }
-                } else if (action.getType().equals("on page")) {
-                    ActionsParser.executeCommand(action.getFeature(), action,
+                    case "on page" -> ActionsParser.executeCommand(action.getFeature(), action,
                             currentPage, output, invoker);
-                } else if (action.getType().equals("back")) {
-                    ActionsParser.back(output);
-                } else if (action.getType().equals("database")) {
-                    if (action.getFeature().equals("add")) {
-                        MovieInput movieToAdd = action.getAddedMovie();
-                        ActionsParser.databaseAdd(movieToAdd, output);
-                    } else if (action.getFeature().equals("delete")) {
-                        String movieToDelete = action.getDeletedMovie();
-                        ActionsParser.databaseDelete(movieToDelete, output);
+                    case "back" -> ActionsParser.back(output);
+                    case "database" -> {
+                        if (action.getFeature().equals("add")) {
+                            MovieInput movieToAdd = action.getAddedMovie();
+                            ActionsParser.databaseAdd(movieToAdd, output);
+                        } else if (action.getFeature().equals("delete")) {
+                            String movieToDelete = action.getDeletedMovie();
+                            ActionsParser.databaseDelete(movieToDelete, output);
+                        }
                     }
                 }
             }

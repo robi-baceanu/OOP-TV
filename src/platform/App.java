@@ -85,8 +85,6 @@ public final class App {
      * @param nextPage next page that is to be accessed
      */
     public void updateApp(final User user, final String nextPage) {
-        app.setCurrentPage(PageFactory.getPage(nextPage));
-
         app.setCurrentUser(user);
 
         if (user != null) {
@@ -97,5 +95,7 @@ public final class App {
         } else {
             app.setCurrentUserMovies(new ArrayList<>());
         }
+
+        app.setCurrentPage(PageFactory.getPage(nextPage));
     }
 }

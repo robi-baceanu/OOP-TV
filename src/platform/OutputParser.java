@@ -39,7 +39,7 @@ public final class OutputParser {
     public static void createMovieNode(final ObjectNode movieNode, final Movie movie) {
         if (movie != null) {
             movieNode.put("name", movie.getMovieInfo().getName());
-            movieNode.put("year", movie.getMovieInfo().getYear());
+            movieNode.put("year", ((Integer) movie.getMovieInfo().getYear()).toString());
             movieNode.put("duration", movie.getMovieInfo().getDuration());
             ArrayNode genresNode = MagicNumbers.OBJECT_MAPPER.createArrayNode();
             for (String genre : movie.getMovieInfo().getGenres()) {
@@ -74,6 +74,35 @@ public final class OutputParser {
             ObjectNode movieNode = MagicNumbers.OBJECT_MAPPER.createObjectNode();
             OutputParser.createMovieNode(movieNode, movie);
             moviesNode.add(movieNode);
+        }
+    }
+
+    /**
+     * Generates an ObjectNode that describes a notification
+     *
+     * @param notificationNode ObjectNode to parse
+     * @param notification instance of notification desired for output
+     */
+    public static void createNotificationNode(final ObjectNode notificationNode,
+                                              final Notification notification) {
+        if (notification != null) {
+            notificationNode.put("movieName", notification.getMovieName());
+            notificationNode.put("message", notification.getMessage());
+        }
+    }
+
+    /**
+     * Generates an ArrayNode that describes a list of notifications
+     *
+     * @param notificationsNode ArrayNode to parse
+     * @param notifications list of notifications desired for output
+     */
+    public static void createNotificationsArrayNode(final ArrayNode notificationsNode,
+                                                    final ArrayList<Notification> notifications) {
+        for (Notification notification : notifications) {
+            ObjectNode notificationNode = MagicNumbers.OBJECT_MAPPER.createObjectNode();
+            OutputParser.createNotificationNode(notificationNode, notification);
+            notificationsNode.add(notificationNode);
         }
     }
 
@@ -115,7 +144,25 @@ public final class OutputParser {
             ArrayNode ratedMoviesNode = MagicNumbers.OBJECT_MAPPER.createArrayNode();
             createMoviesArrayNode(ratedMoviesNode, currentUser.getRatedMovies());
             currentUserNode.set("ratedMovies", ratedMoviesNode);
+
+            ArrayNode notificationsNode = MagicNumbers.OBJECT_MAPPER.createArrayNode();
+            createNotificationsArrayNode(notificationsNode, currentUser.getNotifications());
+            currentUserNode.set("notifications", notificationsNode);
         }
+    }
+
+    /**
+     * Generates an ObjectNode desired for recommendations
+     *
+     * @param toSend ObjectNode to parse
+     * @param currentUser user desired for output
+     */
+    public static void createRecommendationNode(final ObjectNode toSend, final User currentUser) {
+        toSend.set("error", null);
+        toSend.set("currentMoviesList", null);
+        ObjectNode currentUserNode = MagicNumbers.OBJECT_MAPPER.createObjectNode();
+        OutputParser.createCurrentUserNode(currentUser, currentUserNode);
+        toSend.set("currentUser", currentUserNode);
     }
 
     /**

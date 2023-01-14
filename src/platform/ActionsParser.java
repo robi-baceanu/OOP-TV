@@ -5,9 +5,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import commands.*;
 import fileio.ActionInput;
 import fileio.Credentials;
+import fileio.MovieInput;
 import pages.Page;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedList;
 
 /**
  * Utility class for implementing actions
@@ -168,6 +171,11 @@ public final class ActionsParser {
 
                 return new RateCommand(rate);
             }
+            case "subscribe" -> {
+                String subscribedGenre = action.getSubscribedGenre();
+
+                return new SubscribeCommand(subscribedGenre);
+            }
             default -> {
                 ObjectNode toSend = MagicNumbers.OBJECT_MAPPER.createObjectNode();
                 OutputParser.createErrorNode(toSend);
@@ -192,5 +200,171 @@ public final class ActionsParser {
                                       final Invoker invoker) {
         Command command = getCommand(commandName, action, output);
         invoker.execute(command, currentPage, output);
+    }
+
+    public static void back(final ArrayNode output) {
+        User currentUser = App.getInstance().getCurrentUser();
+
+        if (currentUser != null) {
+            if (currentUser.getAccessedPages().size() > 0) {
+                LinkedList<String> userAccessedPages = currentUser.getAccessedPages();
+                currentUser.getAccessedPages().removeLast();
+
+                if (currentUser.getAccessedPages().size() > 0) {
+//                    App.getInstance().getCurrentPage().changePage(userAccessedPages.getLast(), output);
+//
+//                    if (userAccessedPages.getLast().equals("movies")) {
+//                        showPage(output);
+//                    }
+                    changePage(userAccessedPages.getLast(), output);
+                } else {
+                    ObjectNode toSend = MagicNumbers.OBJECT_MAPPER.createObjectNode();
+                    OutputParser.createErrorNode(toSend);
+                    output.add(toSend);
+                }
+            } else {
+                ObjectNode toSend = MagicNumbers.OBJECT_MAPPER.createObjectNode();
+                OutputParser.createErrorNode(toSend);
+                output.add(toSend);
+            }
+        }
+    }
+
+    public static void databaseAdd(final MovieInput movieToAdd, final ArrayNode output) {
+        boolean movieExistsInDatabase = false;
+        String movieName = movieToAdd.getName();
+
+        for (Movie movie : MoviesDatabase.getInstance().getMovies()) {
+            if (movie.getMovieInfo().getName().equals(movieName)) {
+                movieExistsInDatabase = true;
+                break;
+            }
+        }
+
+        if (!movieExistsInDatabase) {
+            MoviesDatabase.getInstance().getMovies().add(new Movie(movieToAdd));
+            MoviesDatabase.notifySubscribers("add", movieToAdd);
+        } else {
+            ObjectNode toSend = MagicNumbers.OBJECT_MAPPER.createObjectNode();
+            OutputParser.createErrorNode(toSend);
+            output.add(toSend);
+        }
+    }
+
+    public static void databaseDelete(final String movieToDelete, final ArrayNode output) {
+        boolean movieExistsInDatabase = false;
+        MovieInput movieToDeleteInput = null;
+
+        for (Movie movie : MoviesDatabase.getInstance().getMovies()) {
+            if (movie.getMovieInfo().getName().equals(movieToDelete)) {
+                movieExistsInDatabase = true;
+                movieToDeleteInput = movie.getMovieInfo();
+                break;
+            }
+        }
+
+        if (movieExistsInDatabase) {
+            MoviesDatabase.getInstance().getMovies().removeIf(movie -> movie.getMovieInfo().getName().equals(movieToDelete));
+            MoviesDatabase.notifySubscribers("delete", movieToDeleteInput);
+        } else {
+            ObjectNode toSend = MagicNumbers.OBJECT_MAPPER.createObjectNode();
+            OutputParser.createErrorNode(toSend);
+            output.add(toSend);
+        }
+    }
+
+    public static void launchRecommendation(final ArrayNode output) {
+        User currentUser = App.getInstance().getCurrentUser();
+
+        class Genre {
+            private String genre;
+            private int numLikes;
+
+            public Genre(String genre) {
+                this.genre = genre;
+                this.numLikes = 1;
+            }
+
+            public String getGenre() {
+                return genre;
+            }
+
+            public void setGenre(String genre) {
+                this.genre = genre;
+            }
+
+            public int getNumLikes() {
+                return numLikes;
+            }
+
+            public void setNumLikes(int numLikes) {
+                this.numLikes = numLikes;
+            }
+        }
+
+        if (currentUser.getCredentials().getCredentials().getAccountType().equals("premium")) {
+            ArrayList<Genre> topGenres = new ArrayList<>();
+
+            for (Movie movie : currentUser.getLikedMovies()) {
+                for (String genre : movie.getMovieInfo().getGenres()) {
+                    boolean genreExistsInTop = false;
+                    Genre genreToIncrement = null;
+
+                    for (Genre entry : topGenres) {
+                        if (entry.genre.equals(genre)) {
+                            genreExistsInTop = true;
+                            genreToIncrement = entry;
+                            break;
+                        }
+                    }
+
+                    if (!genreExistsInTop) {
+                        topGenres.add(new Genre(genre));
+                    } else {
+                        genreToIncrement.numLikes++;
+                    }
+                }
+            }
+
+            topGenres.sort(new Comparator<Genre>() {
+                @Override
+                public int compare(Genre o1, Genre o2) {
+                    if (o1.numLikes == o2.numLikes) {
+                        return o1.genre.compareTo(o2.genre);
+                    } else {
+                        return o2.numLikes - o1.numLikes;
+                    }
+                }
+            });
+
+            ArrayList<Movie> currentUserMovies = new ArrayList<>(App.getInstance().getCurrentUserMovies());
+            currentUserMovies.sort(new Comparator<Movie>() {
+                @Override
+                public int compare(Movie o1, Movie o2) {
+                    return o2.getNumLikes() - o1.getNumLikes();
+                }
+            });
+
+            Movie movieToRecommend = null;
+            for (Genre genre : topGenres) {
+                for (Movie movie : currentUserMovies) {
+                    if (movie.getMovieInfo().getGenres().contains(genre.getGenre()) &&
+                            !currentUser.getWatchedMovies().contains(movie)) {
+                        movieToRecommend = movie;
+                        break;
+                    }
+                }
+            }
+
+            if (movieToRecommend != null) {
+                currentUser.getNotifications().add(new Notification(movieToRecommend.getMovieInfo().getName(), "Recommendation"));
+            } else {
+                currentUser.getNotifications().add(new Notification("No recommendation", "Recommendation"));
+            }
+
+            ObjectNode toSend = MagicNumbers.OBJECT_MAPPER.createObjectNode();
+            OutputParser.createRecommendationNode(toSend, currentUser);
+            output.add(toSend);
+        }
     }
 }

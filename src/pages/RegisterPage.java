@@ -6,6 +6,8 @@ import platform.App;
 import platform.User;
 import platform.UsersDatabase;
 
+import java.util.LinkedList;
+
 /**
  * Page where user can register
  *
@@ -52,6 +54,8 @@ public final class RegisterPage extends Page {
 
         if (userCreatingAccount != null) {
             UsersDatabase.getInstance().getUsers().add(userCreatingAccount);
+            userCreatingAccount.setAccessedPages(new LinkedList<>());
+            userCreatingAccount.getAccessedPages().addLast("homepage");
             App.getInstance().updateApp(userCreatingAccount, "homepage");
         } else {
             App.getInstance().updateApp(null, "logout");

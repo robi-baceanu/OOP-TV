@@ -6,6 +6,8 @@ import platform.App;
 import platform.User;
 import platform.UsersDatabase;
 
+import java.util.LinkedList;
+
 /**
  * Page where user can log in
  *
@@ -58,6 +60,8 @@ public final class LoginPage extends Page {
         User userLoggingIn = tryLogin();
 
         if (userLoggingIn != null) {
+            userLoggingIn.setAccessedPages(new LinkedList<>());
+            userLoggingIn.getAccessedPages().addLast("homepage");
             App.getInstance().updateApp(userLoggingIn, "homepage");
         } else {
             App.getInstance().updateApp(null, "logout");

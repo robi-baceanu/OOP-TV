@@ -6,32 +6,31 @@ import pages.DetailsPage;
 import pages.Page;
 import platform.*;
 
-import static platform.ActionsParser.showPage;
-
 /**
  * @author wh1ter0se
  */
-public final class WatchCommand implements Command {
-    /**
-     * Watches a movie if it has been purchased
-     */
-    public WatchCommand() {
+public class SubscribeCommand implements Command {
+    private final String subscribedGenre;
 
+    /**
+     * Subscribes user to a genre, if not already subscribed to it
+     *
+     * @param subscribedGenre genre to subscribe to
+     */
+    public SubscribeCommand(final String subscribedGenre) {
+        this.subscribedGenre = subscribedGenre;
     }
 
     @Override
-    public void execute(final Page currentPage, final ArrayNode output) {
+    public void execute(Page currentPage, ArrayNode output) {
         User currentUser = App.getInstance().getCurrentUser();
 
         if (currentPage instanceof DetailsPage) {
-            if (currentPage.getCurrentMoviesList().size() > 0) {
-                Movie movieToWatch = currentPage.getCurrentMoviesList().get(0);
+            Movie movie = currentPage.getCurrentMoviesList().get(0);
 
-                if (currentUser.getPurchasedMovies().contains(movieToWatch)) {
-                    if (!currentUser.getWatchedMovies().contains(movieToWatch)) {
-                        currentUser.getWatchedMovies().add(movieToWatch);
-                    }
-                    showPage(output);
+            if (movie.getMovieInfo().getGenres().contains(subscribedGenre)) {
+                if (!currentUser.getSubscriptions().contains(subscribedGenre)) {
+                    currentUser.getSubscriptions().add(subscribedGenre);
                 } else {
                     ObjectNode toSend = MagicNumbers.OBJECT_MAPPER.createObjectNode();
                     OutputParser.createErrorNode(toSend);

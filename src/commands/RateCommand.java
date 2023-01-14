@@ -6,6 +6,8 @@ import pages.DetailsPage;
 import pages.Page;
 import platform.*;
 
+import java.util.Map;
+
 import static platform.ActionsParser.showPage;
 
 /**
@@ -32,14 +34,30 @@ public final class RateCommand implements Command {
                 Movie movieToRate = currentPage.getCurrentMoviesList().get(0);
 
                 if (currentUser.getWatchedMovies().contains(movieToRate)
-                        && !currentUser.getRatedMovies().contains(movieToRate)
                         && rate <= MagicNumbers.MAX_RATING) {
-                    movieToRate.setSumOfRatings(movieToRate.getSumOfRatings() + rate);
-                    movieToRate.setNumRatings(movieToRate.getNumRatings() + 1);
-                    movieToRate.setRating(
-                            movieToRate.getSumOfRatings() / movieToRate.getNumRatings());
+                    if (!currentUser.getRatedMovies().contains(movieToRate)) {
+                        currentUser.getRatingsGiven().put(movieToRate.getMovieInfo().getName(), rate);
 
-                    currentUser.getRatedMovies().add(movieToRate);
+                        movieToRate.setSumOfRatings(movieToRate.getSumOfRatings() + rate);
+                        movieToRate.setNumRatings(movieToRate.getNumRatings() + 1);
+                        movieToRate.setRating(
+                                movieToRate.getSumOfRatings() / movieToRate.getNumRatings());
+
+                        currentUser.getRatedMovies().add(movieToRate);
+                    } else {
+                        double oldRate = 0;
+                        for (Map.Entry<String, Double> entry : currentUser.getRatingsGiven().entrySet()) {
+                            if (entry.getKey().equals(movieToRate.getMovieInfo().getName())) {
+                                oldRate = entry.getValue();
+                                entry.setValue(rate);
+                            }
+                        }
+
+                        movieToRate.setSumOfRatings(movieToRate.getSumOfRatings() + rate);
+                        movieToRate.setSumOfRatings(movieToRate.getSumOfRatings() - oldRate);
+                        movieToRate.setRating(
+                                movieToRate.getSumOfRatings() / movieToRate.getNumRatings());
+                    }
 
                     showPage(output);
                 } else {

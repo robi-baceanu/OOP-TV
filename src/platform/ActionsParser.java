@@ -298,69 +298,71 @@ public final class ActionsParser {
             }
         }
 
-        if (currentUser.getCredentials().getCredentials().getAccountType().equals("premium")) {
-            ArrayList<Genre> topGenres = new ArrayList<>();
+        if (currentUser != null) {
+            if (currentUser.getCredentials().getCredentials().getAccountType().equals("premium")) {
+                ArrayList<Genre> topGenres = new ArrayList<>();
 
-            for (Movie movie : currentUser.getLikedMovies()) {
-                for (String genre : movie.getMovieInfo().getGenres()) {
-                    boolean genreExistsInTop = false;
-                    Genre genreToIncrement = null;
+                for (Movie movie : currentUser.getLikedMovies()) {
+                    for (String genre : movie.getMovieInfo().getGenres()) {
+                        boolean genreExistsInTop = false;
+                        Genre genreToIncrement = null;
 
-                    for (Genre entry : topGenres) {
-                        if (entry.genre.equals(genre)) {
-                            genreExistsInTop = true;
-                            genreToIncrement = entry;
+                        for (Genre entry : topGenres) {
+                            if (entry.genre.equals(genre)) {
+                                genreExistsInTop = true;
+                                genreToIncrement = entry;
+                                break;
+                            }
+                        }
+
+                        if (!genreExistsInTop) {
+                            topGenres.add(new Genre(genre));
+                        } else {
+                            genreToIncrement.numLikes++;
+                        }
+                    }
+                }
+
+                topGenres.sort(new Comparator<Genre>() {
+                    @Override
+                    public int compare(Genre o1, Genre o2) {
+                        if (o1.numLikes == o2.numLikes) {
+                            return o1.genre.compareTo(o2.genre);
+                        } else {
+                            return o2.numLikes - o1.numLikes;
+                        }
+                    }
+                });
+
+                ArrayList<Movie> currentUserMovies = new ArrayList<>(App.getInstance().getCurrentUserMovies());
+                currentUserMovies.sort(new Comparator<Movie>() {
+                    @Override
+                    public int compare(Movie o1, Movie o2) {
+                        return o2.getNumLikes() - o1.getNumLikes();
+                    }
+                });
+
+                Movie movieToRecommend = null;
+                for (Genre genre : topGenres) {
+                    for (Movie movie : currentUserMovies) {
+                        if (movie.getMovieInfo().getGenres().contains(genre.getGenre()) &&
+                                !currentUser.getWatchedMovies().contains(movie)) {
+                            movieToRecommend = movie;
                             break;
                         }
                     }
-
-                    if (!genreExistsInTop) {
-                        topGenres.add(new Genre(genre));
-                    } else {
-                        genreToIncrement.numLikes++;
-                    }
                 }
+
+                if (movieToRecommend != null) {
+                    currentUser.getNotifications().add(new Notification(movieToRecommend.getMovieInfo().getName(), "Recommendation"));
+                } else {
+                    currentUser.getNotifications().add(new Notification("No recommendation", "Recommendation"));
+                }
+
+                ObjectNode toSend = MagicNumbers.OBJECT_MAPPER.createObjectNode();
+                OutputParser.createRecommendationNode(toSend, currentUser);
+                output.add(toSend);
             }
-
-            topGenres.sort(new Comparator<Genre>() {
-                @Override
-                public int compare(Genre o1, Genre o2) {
-                    if (o1.numLikes == o2.numLikes) {
-                        return o1.genre.compareTo(o2.genre);
-                    } else {
-                        return o2.numLikes - o1.numLikes;
-                    }
-                }
-            });
-
-            ArrayList<Movie> currentUserMovies = new ArrayList<>(App.getInstance().getCurrentUserMovies());
-            currentUserMovies.sort(new Comparator<Movie>() {
-                @Override
-                public int compare(Movie o1, Movie o2) {
-                    return o2.getNumLikes() - o1.getNumLikes();
-                }
-            });
-
-            Movie movieToRecommend = null;
-            for (Genre genre : topGenres) {
-                for (Movie movie : currentUserMovies) {
-                    if (movie.getMovieInfo().getGenres().contains(genre.getGenre()) &&
-                            !currentUser.getWatchedMovies().contains(movie)) {
-                        movieToRecommend = movie;
-                        break;
-                    }
-                }
-            }
-
-            if (movieToRecommend != null) {
-                currentUser.getNotifications().add(new Notification(movieToRecommend.getMovieInfo().getName(), "Recommendation"));
-            } else {
-                currentUser.getNotifications().add(new Notification("No recommendation", "Recommendation"));
-            }
-
-            ObjectNode toSend = MagicNumbers.OBJECT_MAPPER.createObjectNode();
-            OutputParser.createRecommendationNode(toSend, currentUser);
-            output.add(toSend);
         }
     }
 }

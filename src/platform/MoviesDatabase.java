@@ -61,24 +61,6 @@ public final class MoviesDatabase implements Database {
      * @param movie movie that was added / deleted
      */
     public static void notifySubscribers(String eventType, MovieInput movie) {
-//        if (eventType.equals("add")) {
-//            for (User user : UsersDatabase.getInstance().getUsers()) {
-//                for (String genre : movie.getGenres()) {
-//                    if (user.getSubscriptions().contains(genre) &&
-//                            !movie.getCountriesBanned().contains(user.getCredentials().getCredentials().getCountry())) {
-//                        user.getNotifications().add(new Notification(movie.getName(), "ADD"));
-//                    }
-//                }
-//            }
-//        } else if (eventType.equals("delete")) {
-//            for (User user : UsersDatabase.getInstance().getUsers()) {
-//                for (Movie purchasedMovie : user.getPurchasedMovies()) {
-//                    if (purchasedMovie.getMovieInfo().getName().equals(movie.getName())) {
-//                        user.getNotifications().add(new Notification(movie.getName(), "DELETE"));
-//                    }
-//                }
-//            }
-//        }
         for (User user : UsersDatabase.getInstance().getUsers()) {
             user.update(eventType, movie);
         }

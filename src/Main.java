@@ -24,7 +24,7 @@ public final class Main {
      * @throws IOException in case of exceptions to reading / writing
      */
     public static void main(final String[] args) throws IOException {
-//        for (int i = 6; i <= 6; i++) {
+//        for (int i = 8; i <= 9; i++) {
 //            Input inputData = MagicNumbers.OBJECT_MAPPER.readValue(new File("checker/resources/in/basic_" + i + ".json"), Input.class);
             Input inputData = MagicNumbers.OBJECT_MAPPER.readValue(new File(args[0]), Input.class);
 

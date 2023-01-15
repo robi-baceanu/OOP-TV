@@ -138,6 +138,7 @@ public final class User {
                 if (this.getSubscriptions().contains(genre) &&
                         !movie.getCountriesBanned().contains(this.getCredentials().getCredentials().getCountry())) {
                     this.getNotifications().add(new Notification(movie.getName(), "ADD"));
+                    break;
                 }
             }
         } else if (eventType.equals("delete")) {

@@ -2,6 +2,11 @@ package fileio;
 
 import java.util.ArrayList;
 
+/**
+ * FileIO class that describes input as a whole
+ *
+ * @author wh1ter0se
+ */
 public final class Input {
     private ArrayList<UserInput> users;
     private ArrayList<MovieInput> movies;

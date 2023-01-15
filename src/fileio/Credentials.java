@@ -1,5 +1,10 @@
 package fileio;
 
+/**
+ * FileIO class that describes the credentials field of a user
+ *
+ * @author wh1ter0se
+ */
 public final class Credentials {
     private String name;
     private String password;

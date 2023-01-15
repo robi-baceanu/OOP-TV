@@ -47,6 +47,9 @@ public final class MoviesDatabase implements Database {
         this.movies = movies;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void initDatabase(final Input inputData) {
         for (MovieInput movie : inputData.getMovies()) {
@@ -60,7 +63,7 @@ public final class MoviesDatabase implements Database {
      * @param eventType whether a movie was added or deleted
      * @param movie movie that was added / deleted
      */
-    public static void notifySubscribers(String eventType, MovieInput movie) {
+    public static void notifySubscribers(final String eventType, final MovieInput movie) {
         for (User user : UsersDatabase.getInstance().getUsers()) {
             user.update(eventType, movie);
         }

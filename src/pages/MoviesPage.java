@@ -18,6 +18,9 @@ public final class MoviesPage extends Page {
         this.setCurrentMoviesList(App.getInstance().getCurrentUserMovies());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void changePage(final String nextPage, final ArrayNode output) {
         if (nextPage.equals("see details")

@@ -23,6 +23,9 @@ public final class SearchCommand implements Command {
         this.startsWith = startsWith;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void execute(final Page currentPage, final ArrayNode output) {
         ObjectNode toSend = MagicNumbers.OBJECT_MAPPER.createObjectNode();

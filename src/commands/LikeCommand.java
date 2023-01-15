@@ -19,7 +19,9 @@ public final class LikeCommand implements Command {
 
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void execute(final Page currentPage, final ArrayNode output) {
         User currentUser = App.getInstance().getCurrentUser();

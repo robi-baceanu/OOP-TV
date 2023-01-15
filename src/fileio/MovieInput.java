@@ -2,6 +2,11 @@ package fileio;
 
 import java.util.ArrayList;
 
+/**
+ * FileIO class that describes a movie and its fields
+ *
+ * @author wh1ter0se
+ */
 public final class MovieInput {
     private String name;
     private int year;

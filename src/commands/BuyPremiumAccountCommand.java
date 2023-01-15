@@ -21,6 +21,9 @@ public final class BuyPremiumAccountCommand implements Command {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void execute(final Page currentPage, final ArrayNode output) {
         if (currentPage instanceof UpgradesPage) {

@@ -39,6 +39,9 @@ public final class FilterCommand implements Command {
         this.genres = genres;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void execute(final Page currentPage, final ArrayNode output) {
         if (currentPage instanceof MoviesPage) {

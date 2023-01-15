@@ -18,6 +18,9 @@ public final class DetailsPage extends Page {
         super();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void changePage(final String nextPage, final ArrayNode output) {
         if (nextPage.equals("movies")

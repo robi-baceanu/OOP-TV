@@ -47,6 +47,9 @@ public final class UsersDatabase implements Database {
         this.users = users;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void initDatabase(final Input inputData) {
         for (UserInput user : inputData.getUsers()) {

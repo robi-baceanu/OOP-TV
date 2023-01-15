@@ -1,5 +1,10 @@
 package fileio;
 
+/**
+ * FileIO class that describes the "sorting" field of a "filter" action
+ *
+ * @author wh1ter0se
+ */
 public final class SortInput {
     private String rating;
     private String duration;

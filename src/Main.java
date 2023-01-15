@@ -1,5 +1,6 @@
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import commands.Invoker;
 import fileio.ActionInput;
 import fileio.Input;
@@ -40,7 +41,8 @@ public final class Main {
             switch (action.getType()) {
                 case "change page" -> {
                     if (App.getInstance().getCurrentUser() != null) {
-                        App.getInstance().getCurrentUser().getAccessedPages().addLast(action.getPage());
+                        App.getInstance().getCurrentUser().
+                                getAccessedPages().addLast(action.getPage());
                     }
 
                     if (!action.getPage().equals("see details")) {
@@ -50,9 +52,12 @@ public final class Main {
                         ActionsParser.changeToDetailsPage(currentPage, movie, action, output);
                     }
                 }
+
                 case "on page" -> ActionsParser.executeCommand(action.getFeature(), action,
                         currentPage, output, invoker);
+
                 case "back" -> ActionsParser.back(output);
+
                 case "database" -> {
                     if (action.getFeature().equals("add")) {
                         MovieInput movieToAdd = action.getAddedMovie();
@@ -62,8 +67,15 @@ public final class Main {
                         ActionsParser.databaseDelete(movieToDelete, output);
                     }
                 }
+
+                default -> {
+                    ObjectNode toSend = MagicNumbers.OBJECT_MAPPER.createObjectNode();
+                    OutputParser.createErrorNode(toSend);
+                    output.add(toSend);
+                }
             }
         }
+
         ActionsParser.launchRecommendation(output);
 
         ObjectWriter objectWriter = MagicNumbers.OBJECT_MAPPER.writerWithDefaultPrettyPrinter();

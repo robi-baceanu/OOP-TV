@@ -1,5 +1,10 @@
 package fileio;
 
+/**
+ * FileIO class that describes a "filter" action and its fields
+ *
+ * @author wh1ter0se
+ */
 public final class FilterInput {
     private SortInput sort;
     private ContainsInput contains;

@@ -5,6 +5,7 @@ import pages.Page;
 
 /**
  * Interface used for implementing "on page" commands
+ * (implemented following Observer pattern)
  *
  * @author wh1ter0se
  */

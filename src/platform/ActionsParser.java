@@ -57,7 +57,8 @@ public final class ActionsParser {
     }
 
     /**
-     * Attempts changing the page to a "See details" page
+     * Attempts changing the page to a "See details" page, and does so
+     * if requirements are met
      *
      * @param currentPage instance of current page
      * @param movie name of movie to display details for
@@ -203,6 +204,11 @@ public final class ActionsParser {
         invoker.execute(command, currentPage, output);
     }
 
+    /**
+     * Goes back to the previously accessed page
+     *
+     * @param output ArrayNode where output is passed
+     */
     public static void back(final ArrayNode output) {
         User currentUser = App.getInstance().getCurrentUser();
 
@@ -226,6 +232,13 @@ public final class ActionsParser {
         }
     }
 
+    /**
+     * Adds a movie to the database and notifies users subscribed to
+     * at least one of its genres
+     *
+     * @param movieToAdd details of the movie to be added
+     * @param output ArrayNode where output is passed
+     */
     public static void databaseAdd(final MovieInput movieToAdd, final ArrayNode output) {
         boolean movieExistsInDatabase = false;
         String movieName = movieToAdd.getName();
@@ -247,6 +260,13 @@ public final class ActionsParser {
         }
     }
 
+    /**
+     * Deletes a movie from the database and notifies all users that
+     * had purchased it
+     *
+     * @param movieToDelete details of the movie to be deleted
+     * @param output ArrayNode where output is passed
+     */
     public static void databaseDelete(final String movieToDelete, final ArrayNode output) {
         boolean movieExistsInDatabase = false;
         MovieInput movieToDeleteInput = null;
@@ -260,7 +280,8 @@ public final class ActionsParser {
         }
 
         if (movieExistsInDatabase) {
-            MoviesDatabase.getInstance().getMovies().removeIf(movie -> movie.getMovieInfo().getName().equals(movieToDelete));
+            MoviesDatabase.getInstance().getMovies().
+                    removeIf(movie -> movie.getMovieInfo().getName().equals(movieToDelete));
             MoviesDatabase.notifySubscribers("delete", movieToDeleteInput);
         } else {
             ObjectNode toSend = MagicNumbers.OBJECT_MAPPER.createObjectNode();
@@ -269,6 +290,13 @@ public final class ActionsParser {
         }
     }
 
+    /**
+     * Sends a recommendation to the logged-in user, by notifying him
+     * of a movie that he hasn't watched yet, but one of its genres is among the most
+     * liked genres
+     *
+     * @param output ArrayNode where output is passed
+     */
     public static void launchRecommendation(final ArrayNode output) {
         User currentUser = App.getInstance().getCurrentUser();
 
@@ -276,7 +304,7 @@ public final class ActionsParser {
             private String genre;
             private int numLikes;
 
-            public Genre(String genre) {
+            Genre(final String genre) {
                 this.genre = genre;
                 this.numLikes = 1;
             }
@@ -285,7 +313,7 @@ public final class ActionsParser {
                 return genre;
             }
 
-            public void setGenre(String genre) {
+            public void setGenre(final String genre) {
                 this.genre = genre;
             }
 
@@ -293,7 +321,7 @@ public final class ActionsParser {
                 return numLikes;
             }
 
-            public void setNumLikes(int numLikes) {
+            public void setNumLikes(final int numLikes) {
                 this.numLikes = numLikes;
             }
         }
@@ -325,7 +353,7 @@ public final class ActionsParser {
 
                 topGenres.sort(new Comparator<Genre>() {
                     @Override
-                    public int compare(Genre o1, Genre o2) {
+                    public int compare(final Genre o1, final Genre o2) {
                         if (o1.numLikes == o2.numLikes) {
                             return o1.genre.compareTo(o2.genre);
                         } else {
@@ -334,10 +362,11 @@ public final class ActionsParser {
                     }
                 });
 
-                ArrayList<Movie> currentUserMovies = new ArrayList<>(App.getInstance().getCurrentUserMovies());
+                ArrayList<Movie> currentUserMovies =
+                        new ArrayList<>(App.getInstance().getCurrentUserMovies());
                 currentUserMovies.sort(new Comparator<Movie>() {
                     @Override
-                    public int compare(Movie o1, Movie o2) {
+                    public int compare(final Movie o1, final Movie o2) {
                         return o2.getNumLikes() - o1.getNumLikes();
                     }
                 });
@@ -345,8 +374,8 @@ public final class ActionsParser {
                 Movie movieToRecommend = null;
                 for (Genre genre : topGenres) {
                     for (Movie movie : currentUserMovies) {
-                        if (movie.getMovieInfo().getGenres().contains(genre.getGenre()) &&
-                                !currentUser.getWatchedMovies().contains(movie)) {
+                        if (movie.getMovieInfo().getGenres().contains(genre.getGenre())
+                                && !currentUser.getWatchedMovies().contains(movie)) {
                             movieToRecommend = movie;
                             break;
                         }
@@ -354,9 +383,13 @@ public final class ActionsParser {
                 }
 
                 if (movieToRecommend != null) {
-                    currentUser.getNotifications().add(new Notification(movieToRecommend.getMovieInfo().getName(), "Recommendation"));
+                    currentUser.getNotifications().
+                            add(new Notification(movieToRecommend.getMovieInfo().getName(),
+                                    "Recommendation"));
                 } else {
-                    currentUser.getNotifications().add(new Notification("No recommendation", "Recommendation"));
+                    currentUser.getNotifications().
+                            add(new Notification("No recommendation",
+                                    "Recommendation"));
                 }
 
                 ObjectNode toSend = MagicNumbers.OBJECT_MAPPER.createObjectNode();

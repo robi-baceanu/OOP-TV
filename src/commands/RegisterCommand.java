@@ -30,6 +30,9 @@ public final class RegisterCommand implements Command {
         this.credentials = credentials;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void execute(final Page currentPage, final ArrayNode output) {
         ObjectNode toSend = MagicNumbers.OBJECT_MAPPER.createObjectNode();

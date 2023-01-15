@@ -46,6 +46,9 @@ public final class RegisterPage extends Page {
         return new User(credentials);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void changePage(final String nextPage, final ArrayNode output) {
         /* nextPage is ignored, because we know the page we need to move to,

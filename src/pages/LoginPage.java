@@ -53,6 +53,9 @@ public final class LoginPage extends Page {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void changePage(final String nextPage, final ArrayNode output) {
         /* nextPage is ignored, because we know the page we need to move to,

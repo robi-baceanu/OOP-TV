@@ -2,6 +2,11 @@ package fileio;
 
 import java.util.ArrayList;
 
+/**
+ * FileIO class that describes the "contains" field of a "filter" action
+ *
+ * @author wh1ter0se
+ */
 public final class ContainsInput {
     private ArrayList<String> actors;
     private ArrayList<String> genre;

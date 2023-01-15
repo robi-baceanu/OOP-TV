@@ -5,6 +5,7 @@ import pages.Page;
 
 /**
  * Invoker class for executing commands
+ * (implemented following Observer pattern)
  *
  * @author wh1ter0se
  */

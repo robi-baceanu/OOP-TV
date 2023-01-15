@@ -9,7 +9,7 @@ import platform.*;
 /**
  * @author wh1ter0se
  */
-public class SubscribeCommand implements Command {
+public final class SubscribeCommand implements Command {
     private final String subscribedGenre;
 
     /**
@@ -21,8 +21,11 @@ public class SubscribeCommand implements Command {
         this.subscribedGenre = subscribedGenre;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void execute(Page currentPage, ArrayNode output) {
+    public void execute(final Page currentPage, final ArrayNode output) {
         User currentUser = App.getInstance().getCurrentUser();
 
         if (currentPage instanceof DetailsPage) {

@@ -98,7 +98,7 @@ public final class User {
         return notifications;
     }
 
-    public void setNotifications(ArrayList<Notification> notifications) {
+    public void setNotifications(final ArrayList<Notification> notifications) {
         this.notifications = notifications;
     }
 
@@ -106,7 +106,7 @@ public final class User {
         return accessedPages;
     }
 
-    public void setAccessedPages(LinkedList<String> accessedPages) {
+    public void setAccessedPages(final LinkedList<String> accessedPages) {
         this.accessedPages = accessedPages;
     }
 
@@ -114,7 +114,7 @@ public final class User {
         return subscriptions;
     }
 
-    public void setSubscriptions(ArrayList<String> subscriptions) {
+    public void setSubscriptions(final ArrayList<String> subscriptions) {
         this.subscriptions = subscriptions;
     }
 
@@ -122,7 +122,7 @@ public final class User {
         return ratingsGiven;
     }
 
-    public void setRatingsGiven(HashMap<String, Double> ratingsGiven) {
+    public void setRatingsGiven(final HashMap<String, Double> ratingsGiven) {
         this.ratingsGiven = ratingsGiven;
     }
 
@@ -132,11 +132,12 @@ public final class User {
      * @param eventType whether a movie was added or deleted
      * @param movie movie that was added / deleted
      */
-    public void update(String eventType, MovieInput movie) {
+    public void update(final String eventType, final MovieInput movie) {
         if (eventType.equals("add")) {
             for (String genre : movie.getGenres()) {
-                if (this.getSubscriptions().contains(genre) &&
-                        !movie.getCountriesBanned().contains(this.getCredentials().getCredentials().getCountry())) {
+                if (this.getSubscriptions().contains(genre)
+                        && !movie.getCountriesBanned().
+                        contains(credentials.getCredentials().getCountry())) {
                     this.getNotifications().add(new Notification(movie.getName(), "ADD"));
                     break;
                 }
@@ -148,7 +149,7 @@ public final class User {
 
                     if (this.getCredentials().getCredentials().getAccountType().equals("premium")) {
                         this.setNumFreePremiumMovies(this.getNumFreePremiumMovies() + 1);
-                    } else if (this.getCredentials().getCredentials().getAccountType().equals("standard")) {
+                    } else if (credentials.getCredentials().getAccountType().equals("standard")) {
                         this.setTokensCount(this.getTokensCount() + MagicNumbers.MOVIE_PRICE);
                     }
                 }

@@ -36,7 +36,8 @@ public final class RateCommand implements Command {
                 if (currentUser.getWatchedMovies().contains(movieToRate)
                         && rate <= MagicNumbers.MAX_RATING) {
                     if (!currentUser.getRatedMovies().contains(movieToRate)) {
-                        currentUser.getRatingsGiven().put(movieToRate.getMovieInfo().getName(), rate);
+                        currentUser.getRatingsGiven().
+                                put(movieToRate.getMovieInfo().getName(), rate);
 
                         movieToRate.setSumOfRatings(movieToRate.getSumOfRatings() + rate);
                         movieToRate.setNumRatings(movieToRate.getNumRatings() + 1);
@@ -46,7 +47,8 @@ public final class RateCommand implements Command {
                         currentUser.getRatedMovies().add(movieToRate);
                     } else {
                         double oldRate = 0;
-                        for (Map.Entry<String, Double> entry : currentUser.getRatingsGiven().entrySet()) {
+                        for (Map.Entry<String, Double> entry
+                                : currentUser.getRatingsGiven().entrySet()) {
                             if (entry.getKey().equals(movieToRate.getMovieInfo().getName())) {
                                 oldRate = entry.getValue();
                                 entry.setValue(rate);

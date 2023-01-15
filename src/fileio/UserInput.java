@@ -1,5 +1,10 @@
 package fileio;
 
+/**
+ * FileIO class that describes a user and its fields
+ *
+ * @author wh1ter0se
+ */
 public final class UserInput {
     private Credentials credentials;
 

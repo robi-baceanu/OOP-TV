@@ -22,6 +22,7 @@ public final class MoviesPage extends Page {
     public void changePage(final String nextPage, final ArrayNode output) {
         if (nextPage.equals("see details")
                 || nextPage.equals("movies")
+                || nextPage.equals("upgrades")
                 || nextPage.equals("homepage")) {
             User currentUser = App.getInstance().getCurrentUser();
             App.getInstance().updateApp(currentUser, nextPage);

@@ -35,11 +35,13 @@ public final class BuyTokensCommand implements Command {
                 currentUser.setTokensCount(currentTokensCount + quantity);
                 currentUser.getCredentials().getCredentials().setBalance(currentBalance - quantity);
             } else {
+                System.out.println("Eroare de la valori");
                 ObjectNode toSend = MagicNumbers.OBJECT_MAPPER.createObjectNode();
                 OutputParser.createErrorNode(toSend);
                 output.add(toSend);
             }
         } else {
+            System.out.println("Eroare de la pagina");
             ObjectNode toSend = MagicNumbers.OBJECT_MAPPER.createObjectNode();
             OutputParser.createErrorNode(toSend);
             output.add(toSend);

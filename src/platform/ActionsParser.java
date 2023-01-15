@@ -207,7 +207,7 @@ public final class ActionsParser {
         User currentUser = App.getInstance().getCurrentUser();
 
         if (currentUser != null) {
-            if (currentUser.getAccessedPages().size() > 0) {
+            if (currentUser.getAccessedPages().size() > 1) {
                 LinkedList<String> userAccessedPages = currentUser.getAccessedPages();
                 currentUser.getAccessedPages().removeLast();
 

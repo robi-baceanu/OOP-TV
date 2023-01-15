@@ -84,11 +84,43 @@ All of the actions are implemented in the *ActionsParser* utility class, which i
 
 ## Stage 2
 
-**TO BE DEVELOPED**
+**IMPORTANT NOTE:** As preparations for developing the second stage of the platform, all the **on page** actions were modified
+accordingly, as they are now following the Command pattern. Each on page action now has its own class that implements the *Command* interface.
+Commands are generated using the *getCommand* method inside the ActionsParser class, and executed using an instance of the Invoker class.
 
-Nothing to see here.
+With that out of the way, let's see how stage 2 improved the platform.
 
-<div><img src="https://tenor.com/view/starwars-movealong-stormtrooper-gif-5509326.gif" width="400px"></div>
+### Notifications
 
+Notifications are a new field for users, where each user keeps an ArrayList of (you guessed it) notifications. 
+The notification system was implemented following the Observer pattern. We will describe how they work in the sections to come.
 
+### Subscribe action
 
+A new on page action has been implemented that allows user to subscribe to a certain genre. The action can be executed only from the "See details"
+page of a movie, and a user can only subscribe to only one genre per action. Therefore, subscribing to another genre requires performing a new action.
+A user can be subscribed to multiple genres at once. In the following sections, I will describe the benefits of being subscribed to a genre.
+
+### New action type: *Back*
+
+**Back** is a new type of action that lets the user browse through the previously accessed pages. It was implemented by simulating a stack of pages as 
+a user logs in. When the back action is performed, the last page in the stack is removed and a *changePage* action is performed on the page which stands at
+the top of the stack.
+
+### New action type: *Database*
+
+This new action type lets us add or remove movies from the *MoviesDatabase*, and can send notifications to users, as follows:
+
+* *database add* --> notifies all users that are subscribed to at least one genre of the added movie.
+* *database delete* --> notifies all users that had purchased the movie which is being removed, and also returns
+the currency equivalent to a movie (2 tokens for a standard user, a free premium movie for a premium user)
+
+### Recommendations
+
+After all the actions are parsed, if a premium user is logged onto the platform, he will receive a recommendation, as such:
+1. A ranking of the most liked genres of the user is created
+2. A movie from the most liked genre which the user has not yet watched is searched for
+3. If there is no movie found, a movie is searched for among those of the next genre in the ranking.
+4. When finding a movie that suits the requirements, a notification is sent to the user.
+
+And so, the features of this platform come to a close. Have fun watching your favourite movies / shows!
